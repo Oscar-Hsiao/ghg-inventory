@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GHG 溫室氣體盤查系統 — 公信電子</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft JhengHei','Noto Sans TC',system-ui,sans-serif;background:#f0f4f8;color:#1a202c;display:flex;min-height:100vh}
+/* Sidebar */
+#sidebar{width:210px;min-height:100vh;background:#0d2d20;position:fixed;top:0;left:0;padding:0;z-index:100;display:flex;flex-direction:column}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-company{font-size:11px;color:#4ade80;font-weight:700;letter-spacing:.1em;margin-bottom:3px}
+.sb-title{font-size:15px;font-weight:700;color:#fff}
+.sb-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.sb-nav{padding:14px 10px;display:flex;flex-direction:column;gap:3px;flex:1}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:13px;cursor:pointer;text-align:left;width:100%;transition:all .15s;font-family:inherit}
+.sb-btn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
+.sb-btn.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+/* Main */
+#main{margin-left:210px;flex:1;padding:28px 32px;max-width:calc(100vw - 210px)}
+/* Cards */
+.card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:20px 24px;margin-bottom:16px}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:#fff;border-radius:10px;border:1px solid #e2e8f0;padding:16px 20px}
+.metric-label{font-size:12px;color:#718096;margin-bottom:6px}
+.metric-value{font-size:26px;font-weight:700}
+.metric-unit{font-size:12px;color:#718096;margin-top:2px}
+.section-title{font-size:12px;font-weight:700;color:#718096;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 10px;font-weight:600;color:#718096;font-size:12px;border-bottom:1px solid #e2e8f0}
+td{padding:8px 10px;border-bottom:1px solid #f0f4f8}
+tr:last-child td{border-bottom:none}
+/* Form */
+.form-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
+.form-group{display:flex;flex-direction:column;gap:4px;min-width:80px}
+.form-group.flex1{flex:1}
+.form-label{font-size:12px;color:#718096}
+input,select,textarea{border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px;color:#1a202c;background:#fff;font-family:inherit;width:100%}
+input:focus,select:focus{outline:2px solid #0F6E56;border-color:transparent}
+/* Buttons */
+.btn{padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;border:none;font-family:inherit;white-space:nowrap}
+.btn-primary{background:#0F6E56;color:#fff}
+.btn-primary:hover{background:#0a5a45}
+.btn-danger{background:#fff;color:#C53030;border:1px solid #FC8181}
+.btn-ghost{background:transparent;color:#718096;border:1px solid #e2e8f0}
+.btn-ghost:hover{background:#f7fafc}
+/* Badge */
+.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{padding:8px 16px;border-radius:8px;border:none;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s}
+.tab.active{background:#0F6E56;color:#fff;font-weight:600}
+.tab:not(.active){background:transparent;color:#718096}
+.tab:not(.active):hover{background:#f0f4f8}
+/* Toast */
+#toast{position:fixed;top:20px;right:20px;z-index:9999;background:#276749;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);display:none;max-width:300px}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:22px;font-weight:700}
+.page-sub{font-size:13px;color:#718096;margin-top:4px}
+.header-controls{display:flex;gap:8px;align-items:center}
+/* Chart */
+.chart-container{position:relative}
+canvas{display:block}
+/* Two col */
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+/* Import cards */
+.import-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.import-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:20px 22px;cursor:pointer;transition:border-color .15s}
+.import-card:hover{border-color:#0F6E56}
+.import-card.selected{border-color:#0F6E56}
+/* Progress bar */
+.prog-bar{flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#0F6E56;border-radius:3px;transition:width .3s}
+/* Info box */
+.info-box{padding:14px;background:#f0fdf4;border-radius:8px;font-size:12px;color:#276749;line-height:1.8;margin-top:14px}
+/* Empty */
+.empty{color:#718096;font-size:13px;padding:24px 0;text-align:center}
+/* Pending badge */
+.badge-pending{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;background:#f0f4f8;color:#718096;border:1px solid #e2e8f0}
+select[style*="width"]{width:auto}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-company">公信電子</div>
+    <div class="sb-title">GHG 盤查系統</div>
+    <div class="sb-sub">ISO 14064-1</div>
+  </div>
+  <div class="sb-nav" id="nav"></div>
+</div>
+
+<main id="main"></main>
+
+<script>
+// ═══════════════════════════════════════════════
+// 資料 & 計算
+// ═══════════════════════════════════════════════
+const COEFF_KEY='ghg_coeff', REC_KEY='ghg_records';
+
+const DEFAULT_COEFF={
+  electricity:[
+    {year:2025,factor:0.464,note:'台電官方公告'},
+    {year:2024,factor:0.464,note:'台電官方公告'},
+    {year:2023,factor:0.494,note:'台電官方公告'},
+  ],
+  refrigerants:[
+    {name:'R-134a / HFC-134a',gwp:1430,ar:'AR6'},
+    {name:'R-410A',gwp:2256,ar:'AR6'},
+    {name:'R-22',gwp:1960,ar:'AR6'},
+    {name:'R-600a (isobutane)',gwp:null,note:'未公告'},
+    {name:'Halon (海龍)',gwp:1930,ar:'AR6'},
+  ],
+  fuel:{gasoline92:{co2:2.263132872,ch4:0.000816426,n2o:0.000261256,gwp_ch4:27.9,gwp_n2o:273,note:'環境部 6.0.4'}},
+  septicTank:{bo:0.6,mcf:0.5,gwp_ch4:27.9,bod_per_person_day:0.000015,daily_hours:8}
+};
+
+const DEMO={records:{"2025": {"1": {"electricity": [{"id": "xl_e_1", "site": "汐止", "meter": "2935001313", "kwh": 1073.0, "amount": 2678.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_2", "site": "汐止", "meter": "2935001313", "kwh": 232.4833, "amount": 580.23, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_9", "site": "汐止", "meter": "2935001313", "kwh": 1329.0, "amount": 3579.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_10", "site": "汐止", "meter": "2935001324", "kwh": 2183.0, "amount": 6485.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_11", "site": "汐止", "meter": "2935001324", "kwh": 472.9833, "amount": 1405.08, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_18", "site": "汐止", "meter": "2935001324", "kwh": 2085.0, "amount": 6272.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_19", "site": "汐止", "meter": "2935001335", "kwh": 1768.0, "amount": 4987.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_20", "site": "汐止", "meter": "2935001335", "kwh": 383.0667, "amount": 1080.52, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_27", "site": "汐止", "meter": "2935001335", "kwh": 2051.0, "amount": 6149.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_28", "site": "汐止", "meter": "2935001357", "kwh": 208.0, "amount": 453.0, "startDate": "2024-11-14", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_29", "site": "汐止", "meter": "2935001357", "kwh": 44.3279, "amount": 96.54, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_36", "site": "汐止", "meter": "2935001357", "kwh": 200.0, "amount": 456.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_37", "site": "汐止", "meter": "2935001357", "kwh": 7080.0, "amount": 35348.0, "startDate": "2024-12-16", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_38", "site": "汐止", "meter": "2935001357", "kwh": 3173.7931, "amount": 15845.66, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_51", "site": "汐止", "meter": "2935001357", "kwh": 7720.0, "amount": 37788.0, "startDate": "2025-12-15", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_52", "site": "汐止", "meter": "2935001368", "kwh": 1865.0, "amount": 5337.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_53", "site": "汐止", "meter": "2935001368", "kwh": 404.0833, "amount": 1156.35, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_60", "site": "汐止", "meter": "2935001368", "kwh": 1760.0, "amount": 5098.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_61", "site": "汐止", "meter": "2935001379", "kwh": 1447.0, "amount": 3828.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_62", "site": "汐止", "meter": "2935001379", "kwh": 313.5167, "amount": 829.4, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_69", "site": "汐止", "meter": "2935001379", "kwh": 1177.0, "amount": 3108.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_70", "site": "汐止", "meter": "2935001380", "kwh": 6989.0, "amount": 31881.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_71", "site": "汐止", "meter": "2935001380", "kwh": 1514.2833, "amount": 6907.55, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_78", "site": "汐止", "meter": "2935001380", "kwh": 7585.0, "amount": 35495.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_79", "site": "汐止", "meter": "2935001380", "kwh": 2577.0, "amount": 7908.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_80", "site": "汐止", "meter": "2935001380", "kwh": 558.35, "amount": 1713.4, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_87", "site": "汐止", "meter": "2935001380", "kwh": 2420.0, "amount": 7481.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_97", "site": "南港", "meter": "2935001357", "kwh": 8880.0, "amount": 49204.0, "startDate": "2024-12-26", "endDate": "2025-01-21", "emission": null}, {"id": "xl_e_98", "site": "南港", "meter": "2935001357", "kwh": 6906.6667, "amount": 38269.78, "startDate": "2025-01-01", "endDate": "2025-01-21", "emission": null}, {"id": "xl_e_111", "site": "南港", "meter": "2935001357", "kwh": 8920.0, "amount": 49357.0, "startDate": "2025-12-24", "endDate": "2026-01-22", "emission": null}], "refrigerant": [{"id": "xl_r_1", "site": "汐止", "device": "GR-S120PT", "substance": "HFC-134a", "kg": 0.099, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_2", "site": "汐止", "device": "GN-V292S", "substance": "R-134a", "kg": 0.12, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_3", "site": "汐止", "device": "R1061LA", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_4", "site": "汐止", "device": "UW-999", "substance": "R-134a", "kg": 0.146, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_5", "site": "汐止", "device": "SR-C238BV", "substance": "R-600a", "kg": 0.039, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_6", "site": "汐止", "device": "F-Y12ES", "substance": "R-134a", "kg": 0.12, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_7", "site": "汐止", "device": "F-Y12EN", "substance": "R-134a", "kg": 0.16, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_8", "site": "汐止", "device": "F-Y12EM", "substance": "R-134a", "kg": 0.135, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_9", "site": "南港", "device": "GR-A25TS", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_10", "site": "南港", "device": "GR-A25TS", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_11", "site": "南港", "device": "SR-105A", "substance": "HFC-134A", "kg": 0.05, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_12", "site": "南港", "device": "RD-240HS", "substance": "R-134a", "kg": 0.22, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_13", "site": "南港", "device": "WDEE50Q", "substance": "R-410A", "kg": 0.27, "gwp": 2256.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_14", "site": "南港", "device": "WDEE20AW", "substance": "R-410A", "kg": 0.155, "gwp": 2256.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_15", "site": "南港", "device": "RCU-601WS", "substance": "R22", "kg": 24.0, "gwp": 1960.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_16", "site": "南港", "device": "RAC-50JK", "substance": "R-134a", "kg": 1.48, "gwp": 1960.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_17", "site": "南港", "device": "RAC-50JK", "substance": "R-134a", "kg": 1.48, "gwp": 770.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_18", "site": "南港", "device": "UR11000A", "substance": "R-134a", "kg": 0.146, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_19", "site": "南港", "device": "DELICA", "substance": "R-134a", "kg": 0.725, "gwp": 1430.0, "leakRate": 0.15, "emission": null}, {"id": "xl_r_20", "site": "南港", "device": "AD-010", "substance": "R-134a", "kg": 0.24, "gwp": 1430.0, "leakRate": 0.15, "emission": null}], "fuel": [], "septicTank": [{"id": "xl_s_1", "site": "汐止", "male": 116, "female": 72, "workDays": 17, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_2", "site": "南港", "male": 116, "female": 72, "workDays": 17, "hoursPerDay": 8, "emission": null}]}, "2": {"electricity": [{"id": "xl_e_39", "site": "汐止", "meter": "2935001357", "kwh": 5880.0, "amount": 30868.0, "startDate": "2025-01-14", "endDate": "2025-02-12", "emission": null}, {"id": "xl_e_88", "site": "南港", "meter": "16277550614", "kwh": 2920.0, "amount": 9237.0, "startDate": "2024-12-26", "endDate": "2025-02-23", "emission": null}, {"id": "xl_e_89", "site": "南港", "meter": "2935001313", "kwh": 2628.0, "amount": 8313.3, "startDate": "2025-01-01", "endDate": "2025-02-23", "emission": null}, {"id": "xl_e_96", "site": "南港", "meter": "2935001313", "kwh": 3960.0, "amount": 14828.0, "startDate": "2025-12-24", "endDate": "2026-02-23", "emission": null}, {"id": "xl_e_99", "site": "南港", "meter": "2935001357", "kwh": 9120.0, "amount": 50119.0, "startDate": "2025-01-22", "endDate": "2025-02-23", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_3", "site": "汐止", "male": 112, "female": 71, "workDays": 19, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_4", "site": "南港", "male": 112, "female": 71, "workDays": 19, "hoursPerDay": 8, "emission": null}]}, "3": {"electricity": [{"id": "xl_e_3", "site": "汐止", "meter": "2935001313", "kwh": 1003.0, "amount": 2468.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_12", "site": "汐止", "meter": "2935001324", "kwh": 2027.0, "amount": 5922.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_21", "site": "汐止", "meter": "2935001335", "kwh": 1615.0, "amount": 4435.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_30", "site": "汐止", "meter": "2935001357", "kwh": 214.0, "amount": 467.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_40", "site": "汐止", "meter": "2935001357", "kwh": 7480.0, "amount": 36873.0, "startDate": "2025-02-13", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_54", "site": "汐止", "meter": "2935001368", "kwh": 1736.0, "amount": 4872.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_63", "site": "汐止", "meter": "2935001379", "kwh": 1263.0, "amount": 3248.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_72", "site": "汐止", "meter": "2935001380", "kwh": 6261.0, "amount": 27636.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_81", "site": "汐止", "meter": "2935001380", "kwh": 2139.0, "amount": 6327.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_100", "site": "南港", "meter": "2935001357", "kwh": 12920.0, "amount": 64605.0, "startDate": "2025-02-24", "endDate": "2025-03-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_5", "site": "汐止", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_6", "site": "南港", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "4": {"electricity": [{"id": "xl_e_41", "site": "汐止", "meter": "2935001357", "kwh": 8240.0, "amount": 39770.0, "startDate": "2025-03-14", "endDate": "2025-04-14", "emission": null}, {"id": "xl_e_90", "site": "南港", "meter": "2935001313", "kwh": 3080.0, "amount": 9964.0, "startDate": "2025-02-24", "endDate": "2025-04-24", "emission": null}, {"id": "xl_e_101", "site": "南港", "meter": "2935001357", "kwh": 13000.0, "amount": 64398.0, "startDate": "2025-03-26", "endDate": "2025-04-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_7", "site": "汐止", "male": 110, "female": 72, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_8", "site": "南港", "male": 110, "female": 72, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "5": {"electricity": [{"id": "xl_e_4", "site": "汐止", "meter": "2935001313", "kwh": 1132.0, "amount": 2855.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_13", "site": "汐止", "meter": "2935001324", "kwh": 2228.0, "amount": 6648.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_22", "site": "汐止", "meter": "2935001335", "kwh": 1859.0, "amount": 5316.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_31", "site": "汐止", "meter": "2935001357", "kwh": 204.0, "amount": 445.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_42", "site": "汐止", "meter": "2935001357", "kwh": 8440.0, "amount": 40532.0, "startDate": "2025-04-15", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_55", "site": "汐止", "meter": "2935001368", "kwh": 1783.0, "amount": 5041.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_64", "site": "汐止", "meter": "2935001379", "kwh": 1308.0, "amount": 3383.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_73", "site": "汐止", "meter": "2935001380", "kwh": 7513.0, "amount": 34936.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_82", "site": "汐止", "meter": "2935001380", "kwh": 2512.0, "amount": 7673.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_102", "site": "南港", "meter": "2935001357", "kwh": 10880.0, "amount": 56828.0, "startDate": "2025-04-25", "endDate": "2025-05-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_9", "site": "汐止", "male": 109, "female": 71, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_10", "site": "南港", "male": 109, "female": 71, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "6": {"electricity": [{"id": "xl_e_43", "site": "汐止", "meter": "2935001357", "kwh": 8080.0, "amount": 41010.0, "startDate": "2025-05-14", "endDate": "2025-06-11", "emission": null}, {"id": "xl_e_91", "site": "南港", "meter": "2935001313", "kwh": 5280.0, "amount": 24158.0, "startDate": "2025-04-25", "endDate": "2025-06-24", "emission": null}, {"id": "xl_e_103", "site": "南港", "meter": "2935001357", "kwh": 15320.0, "amount": 85452.0, "startDate": "2025-05-26", "endDate": "2025-06-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_11", "site": "汐止", "male": 110, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_12", "site": "南港", "male": 110, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "7": {"electricity": [{"id": "xl_e_5", "site": "汐止", "meter": "2935001313", "kwh": 1397.0, "amount": 4193.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_14", "site": "汐止", "meter": "2935001324", "kwh": 2281.0, "amount": 7911.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_23", "site": "汐止", "meter": "2935001335", "kwh": 2135.0, "amount": 7297.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_32", "site": "汐止", "meter": "2935001357", "kwh": 204.0, "amount": 507.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_44", "site": "汐止", "meter": "2935001357", "kwh": 8800.0, "amount": 46813.0, "startDate": "2025-06-12", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_56", "site": "汐止", "meter": "2935001368", "kwh": 1977.0, "amount": 6632.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_65", "site": "汐止", "meter": "2935001379", "kwh": 1345.0, "amount": 4013.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_74", "site": "汐止", "meter": "2935001380", "kwh": 9703.0, "amount": 56597.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_83", "site": "汐止", "meter": "2935001380", "kwh": 2609.0, "amount": 9292.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_104", "site": "南港", "meter": "2935001357", "kwh": 16720.0, "amount": 95928.0, "startDate": "2025-06-25", "endDate": "2025-07-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_13", "site": "汐止", "male": 109, "female": 71, "workDays": 23, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_14", "site": "南港", "male": 109, "female": 71, "workDays": 23, "hoursPerDay": 8, "emission": null}]}, "8": {"electricity": [{"id": "xl_e_45", "site": "汐止", "meter": "2935001357", "kwh": 8000.0, "amount": 43551.0, "startDate": "2025-07-14", "endDate": "2025-08-13", "emission": null}, {"id": "xl_e_92", "site": "南港", "meter": "2935001313", "kwh": 7880.0, "amount": 46298.0, "startDate": "2025-06-25", "endDate": "2025-08-25", "emission": null}, {"id": "xl_e_105", "site": "南港", "meter": "2935001357", "kwh": 18240.0, "amount": 100620.0, "startDate": "2025-07-25", "endDate": "2025-08-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_15", "site": "汐止", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_16", "site": "南港", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "9": {"electricity": [{"id": "xl_e_6", "site": "汐止", "meter": "2935001313", "kwh": 1506.0, "amount": 4904.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_15", "site": "汐止", "meter": "2935001324", "kwh": 2391.0, "amount": 8851.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_24", "site": "汐止", "meter": "2935001335", "kwh": 2295.0, "amount": 8423.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_33", "site": "汐止", "meter": "2935001357", "kwh": 226.0, "amount": 590.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_46", "site": "汐止", "meter": "2935001357", "kwh": 7840.0, "amount": 42908.0, "startDate": "2025-08-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_57", "site": "汐止", "meter": "2935001368", "kwh": 1932.0, "amount": 6804.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_66", "site": "汐止", "meter": "2935001379", "kwh": 1321.0, "amount": 4142.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_75", "site": "汐止", "meter": "2935001380", "kwh": 9837.0, "amount": 61316.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_84", "site": "汐止", "meter": "2935001380", "kwh": 2574.0, "amount": 9667.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_106", "site": "南港", "meter": "2935001357", "kwh": 16200.0, "amount": 93130.0, "startDate": "2025-08-26", "endDate": "2025-09-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_17", "site": "汐止", "male": 109, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_18", "site": "南港", "male": 109, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "10": {"electricity": [{"id": "xl_e_47", "site": "汐止", "meter": "2935001357", "kwh": 8520.0, "amount": 43792.0, "startDate": "2025-09-12", "endDate": "2025-10-15", "emission": null}, {"id": "xl_e_93", "site": "南港", "meter": "2935001313", "kwh": 8400.0, "amount": 45760.0, "startDate": "2025-08-26", "endDate": "2025-10-27", "emission": null}, {"id": "xl_e_107", "site": "南港", "meter": "2935001357", "kwh": 15040.0, "amount": 77713.0, "startDate": "2025-09-25", "endDate": "2025-10-27", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_19", "site": "汐止", "male": 109, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_20", "site": "南港", "male": 109, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "11": {"electricity": [{"id": "xl_e_7", "site": "汐止", "meter": "2935001313", "kwh": 1577.0, "amount": 4674.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_16", "site": "汐止", "meter": "2935001324", "kwh": 2277.0, "amount": 7380.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_25", "site": "汐止", "meter": "2935001335", "kwh": 2220.0, "amount": 7160.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_34", "site": "汐止", "meter": "2935001357", "kwh": 205.0, "amount": 488.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_48", "site": "汐止", "meter": "2935001357", "kwh": 7640.0, "amount": 37521.0, "startDate": "2025-10-16", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_58", "site": "汐止", "meter": "2935001368", "kwh": 1912.0, "amount": 5969.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_67", "site": "汐止", "meter": "2935001379", "kwh": 1264.0, "amount": 3545.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_76", "site": "汐止", "meter": "2935001380", "kwh": 10102.0, "amount": 54125.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_85", "site": "汐止", "meter": "2935001380", "kwh": 2482.0, "amount": 8173.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_108", "site": "南港", "meter": "2935001357", "kwh": 12400.0, "amount": 62622.0, "startDate": "2025-10-28", "endDate": "2025-11-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_21", "site": "汐止", "male": 107, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_22", "site": "南港", "male": 107, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "12": {"electricity": [{"id": "xl_e_8", "site": "汐止", "meter": "2935001313", "kwh": 1045.7705, "amount": 2816.26, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_17", "site": "汐止", "meter": "2935001324", "kwh": 1640.6557, "amount": 4935.34, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_26", "site": "汐止", "meter": "2935001335", "kwh": 1613.9016, "amount": 4838.56, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_35", "site": "汐止", "meter": "2935001357", "kwh": 157.377, "amount": 358.82, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_49", "site": "汐止", "meter": "2935001357", "kwh": 7240.0, "amount": 35995.0, "startDate": "2025-11-14", "endDate": "2025-12-14", "emission": null}, {"id": "xl_e_50", "site": "汐止", "meter": "2935001357", "kwh": 4374.6667, "amount": 21413.2, "startDate": "2025-12-15", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_59", "site": "汐止", "meter": "2935001368", "kwh": 1384.918, "amount": 4011.54, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_68", "site": "汐止", "meter": "2935001379", "kwh": 926.1639, "amount": 2445.64, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_77", "site": "汐止", "meter": "2935001380", "kwh": 5968.5246, "amount": 27930.49, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_86", "site": "汐止", "meter": "2935001380", "kwh": 1904.2623, "amount": 5886.69, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_94", "site": "南港", "meter": "2935001313", "kwh": 4120.0, "amount": 15808.0, "startDate": "2025-10-28", "endDate": "2025-12-23", "emission": null}, {"id": "xl_e_95", "site": "南港", "meter": "2935001313", "kwh": 510.9677, "amount": 1913.29, "startDate": "2025-12-24", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_109", "site": "南港", "meter": "2935001357", "kwh": 10200.0, "amount": 54236.0, "startDate": "2025-11-26", "endDate": "2025-12-23", "emission": null}, {"id": "xl_e_110", "site": "南港", "meter": "2935001357", "kwh": 2378.6667, "amount": 13161.87, "startDate": "2025-12-24", "endDate": "2025-12-31", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_23", "site": "汐止", "male": 106, "female": 75, "workDays": 22, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_24", "site": "南港", "male": 106, "female": 75, "workDays": 22, "hoursPerDay": 8, "emission": null}]}}}};
+
+function loadRec(){try{const s=localStorage.getItem(REC_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEMO.records));}catch{return JSON.parse(JSON.stringify(DEMO.records));}}
+function loadCoeff(){try{const s=localStorage.getItem(COEFF_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_COEFF));}catch{return JSON.parse(JSON.stringify(DEFAULT_COEFF));}}
+function saveRec(r){try{localStorage.setItem(REC_KEY,JSON.stringify(r));}catch{}}
+function saveCoeff(c){try{localStorage.setItem(COEFF_KEY,JSON.stringify(c));}catch{}}
+
+let REC=loadRec(), COEFF=loadCoeff();
+let currentTab='dashboard', currentYear=2025, currentMonth=1, currentSite='all';
+
+function getElecFactor(year){return(COEFF.electricity.find(e=>e.year===year)||COEFF.electricity[0]).factor;}
+function calcElec(kwh,year){return+(kwh*getElecFactor(year)/1000).toFixed(6);}
+function calcRefrig(kg,leakRate,gwp){if(!gwp)return null;return+(kg*gwp*leakRate/1000).toFixed(6);}
+function calcFuel(amount,price){if(!price||price<=0)return 0;const f=COEFF.fuel.gasoline92,L=amount/price;return+((L*f.co2+L*f.ch4*f.gwp_ch4+L*f.n2o*f.gwp_n2o)/1000).toFixed(6);}
+function calcSeptic(male,female,workDays,hoursPerDay){const cfg=COEFF.septicTank,ph=(male+female)*hoursPerDay*workDays,act=(ph/cfg.daily_hours)*cfg.bod_per_person_day;return+(act*cfg.bo*cfg.mcf*cfg.gwp_ch4).toFixed(6);}
+
+function recalcYear(year){
+  const yr=String(year);
+  if(!REC[yr])return;
+  Object.keys(REC[yr]).forEach(mo=>{
+    const m=REC[yr][mo];
+    (m.electricity||[]).forEach(r=>{r.emission=calcElec(r.kwh,year);});
+    (m.refrigerant||[]).forEach(r=>{r.emission=calcRefrig(r.kg,r.leakRate,r.gwp);});
+    (m.fuel||[]).forEach(r=>{r.emission=calcFuel(r.amount,r.pricePerLiter);});
+    (m.septicTank||[]).forEach(r=>{r.emission=calcSeptic(r.male,r.female,r.workDays,r.hoursPerDay);});
+  });
+}
+recalcYear(currentYear);
+
+function getSummary(year,site='all'){
+  const yr=String(year);
+  const empty=Array.from({length:12},(_,i)=>({month:i+1,cat1:0,cat2:0,refrigerant:0,fuel:0,septic:0}));
+  if(!REC[yr])return{months:empty,total:{cat1:0,cat2:0}};
+  const months=[];
+  for(let m=1;m<=12;m++){
+    const md=REC[yr][String(m)];
+    if(!md){months.push({month:m,cat1:0,cat2:0,refrigerant:0,fuel:0,septic:0});continue;}
+    const fs=r=>site==='all'||r.site===site;
+    const cat2=(md.electricity||[]).filter(fs).reduce((s,r)=>s+(r.emission||0),0);
+    const refrigerant=(md.refrigerant||[]).filter(fs).reduce((s,r)=>s+(r.emission||0),0);
+    const fuel=(md.fuel||[]).filter(fs).reduce((s,r)=>s+(r.emission||0),0);
+    const septic=(md.septicTank||[]).filter(fs).reduce((s,r)=>s+(r.emission||0),0);
+    months.push({month:m,cat2,refrigerant,fuel,septic,cat1:refrigerant+fuel+septic});
+  }
+  const total=months.reduce((a,m)=>({cat1:a.cat1+m.cat1,cat2:a.cat2+m.cat2}),{cat1:0,cat2:0});
+  return{months,total};
+}
+function getBreakdown(year){
+  const yr=String(year);
+  if(!REC[yr])return[];
+  return['汐止','南港'].map(site=>{
+    let cat1=0,cat2=0;
+    Object.values(REC[yr]).forEach(md=>{
+      cat2+=(md.electricity||[]).filter(r=>r.site===site).reduce((s,r)=>s+(r.emission||0),0);
+      cat1+=[...(md.refrigerant||[]),...(md.fuel||[]),...(md.septicTank||[])].filter(r=>r.site===site).reduce((s,r)=>s+(r.emission||0),0);
+    });
+    return{site,cat1:+cat1.toFixed(4),cat2:+cat2.toFixed(4),total:+(cat1+cat2).toFixed(4)};
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════════
+let toastTimer;
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.background=type==='success'?'#276749':'#C53030';
+  el.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{el.style.display='none';},2800);
+}
+
+// ═══════════════════════════════════════════════
+// HTML helpers
+// ═══════════════════════════════════════════════
+function badge(text,color){return`<span class="badge" style="background:${color}18;color:${color};border:1px solid ${color}30">${esc(text)}</span>`;}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n,d=4){return Number.isFinite(n)?n.toFixed(d):'-';}
+function numFmt(n){return Number.isFinite(n)?n.toLocaleString():'-';}
+
+// ═══════════════════════════════════════════════
+// Canvas Charts
+// ═══════════════════════════════════════════════
+function drawBarChart(canvasId,data){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const pad={top:20,right:10,bottom:30,left:48};
+  const chartW=W-pad.left-pad.right,chartH=H-pad.top-pad.bottom;
+  ctx.clearRect(0,0,W,H);
+
+  const maxVal=Math.max(...data.map(d=>d.cat1+d.cat2),0.001);
+  const barW=chartW/data.length;
+
+  // Grid
+  ctx.strokeStyle='#f0f0f0';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.top+chartH*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+chartW,y);ctx.stroke();
+    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(fmt(maxVal*i/4,3),pad.left-4,y+3);
+  }
+
+  data.forEach((d,i)=>{
+    const x=pad.left+i*barW+barW*0.1;
+    const bw=barW*0.8;
+    const h1=d.cat1/maxVal*chartH;
+    const h2=d.cat2/maxVal*chartH;
+
+    // cat1 (bottom)
+    if(h1>0){ctx.fillStyle='#0F6E56';ctx.fillRect(x,pad.top+chartH-h1,bw,h1);}
+    // cat2 (top)
+    if(h2>0){ctx.fillStyle='#185FA5';ctx.fillRect(x,pad.top+chartH-h1-h2,bw,h2);}
+
+    // x label
+    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.name,pad.left+i*barW+barW/2,H-8);
+  });
+
+  // Legend
+  [['類別一',`#0F6E56`],['類別二','#185FA5']].forEach(([name,color],i)=>{
+    ctx.fillStyle=color;ctx.fillRect(W-120+i*58,6,12,10);
+    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='left';
+    ctx.fillText(name,W-106+i*58,15);
+  });
+}
+
+function drawPieChart(canvasId,data){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const total=data.reduce((s,d)=>s+d.value,0);
+  if(total<=0){ctx.fillStyle='#718096';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
+
+  const cx=W/2-30,cy=H/2,r=Math.min(cx,cy)-20;
+  let startAngle=-Math.PI/2;
+  data.forEach(d=>{
+    const slice=d.value/total*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,startAngle,startAngle+slice);
+    ctx.closePath();ctx.fillStyle=d.color;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    startAngle+=slice;
+  });
+
+  // Legend
+  const lx=W-90,ly=H/2-data.length*12;
+  data.forEach((d,i)=>{
+    ctx.fillStyle=d.color;ctx.fillRect(lx,ly+i*22,12,12);
+    ctx.fillStyle='#1a202c';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(d.name,lx+16,ly+i*22+10);
+    ctx.fillStyle='#718096';
+    ctx.fillText(`${(d.value/total*100).toFixed(0)}%`,lx+16,ly+i*22+21);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Navigation
+// ═══════════════════════════════════════════════
+const NAVS=[
+  {id:'dashboard',icon:'📊',label:'總覽儀表板'},
+  {id:'entry-elec',icon:'⚡',label:'外購電力'},
+  {id:'entry-cat1',icon:'🏭',label:'直接排放'},
+  {id:'coefficients',icon:'⚙️',label:'係數管理'},
+  {id:'report',icon:'📋',label:'報表輸出'},
+  {id:'import',icon:'📥',label:'匯入 Excel'},
+  {id:'scan',icon:'🔍',label:'帳單掃描'},
+];
+
+function renderNav(){
+  document.getElementById('nav').innerHTML=NAVS.map(n=>
+    `<button class="sb-btn${currentTab===n.id?' active':''}" onclick="goto('${n.id}')">${n.icon} ${n.label}</button>`
+  ).join('');
+}
+
+function goto(tab){currentTab=tab;renderNav();renderMain();}
+
+// ═══════════════════════════════════════════════
+// Year/Month/Site selects
+// ═══════════════════════════════════════════════
+function yearSel(val,onchange){
+  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${[2023,2024,2025,2026].map(y=>`<option value="${y}"${val==y?' selected':''}>${y}年</option>`).join('')}</select>`;
+}
+function monthSel(val,onchange){
+  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${Array.from({length:12},(_,i)=>`<option value="${i+1}"${val==i+1?' selected':''}>${i+1}月</option>`).join('')}</select>`;
+}
+function siteSel(val,onchange){
+  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff"><option value="all"${val==='all'?' selected':''}>全場域</option><option value="汐止"${val==='汐止'?' selected':''}>汐止</option><option value="南港"${val==='南港'?' selected':''}>南港</option></select>`;
+}
+function metricCard(label,value,unit,color){
+  return`<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value" style="color:${color}">${value}</div><div class="metric-unit">${unit}</div></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// Pages
+// ═══════════════════════════════════════════════
+
+// ── Dashboard ──
+function pageDashboard(){
+  recalcYear(currentYear);
+  const sum=getSummary(currentYear,currentSite);
+  const bd=getBreakdown(currentYear);
+  const total=+(sum.total.cat1+sum.total.cat2).toFixed(4);
+  const filledMonths=Object.keys(REC[String(currentYear)]||{}).length;
+  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+  const pieData=[
+    {name:'外購電力',value:+sum.total.cat2.toFixed(4),color:'#185FA5'},
+    {name:'冷媒逸散',value:+sum.months.reduce((s,m)=>s+(m.refrigerant||0),0).toFixed(4),color:'#854F0B'},
+    {name:'移動源',value:+sum.months.reduce((s,m)=>s+(m.fuel||0),0).toFixed(4),color:'#993556'},
+    {name:'化糞池',value:+sum.months.reduce((s,m)=>s+(m.septic||0),0).toFixed(4),color:'#533AB7'},
+  ].filter(d=>d.value>0);
+
+  const breakdownRows=bd.map(r=>`
+    <tr>
+      <td style="font-weight:600">${r.site}</td>
+      <td style="color:#0F6E56">${r.cat1.toFixed(4)}</td>
+      <td style="color:#185FA5">${r.cat2.toFixed(4)}</td>
+      <td style="font-weight:600">${r.total.toFixed(4)}</td>
+      <td>${total>0?`<div style="display:flex;align-items:center;gap:8px"><div class="prog-bar"><div class="prog-fill" style="width:${(r.total/total*100).toFixed(1)}%"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56;min-width:36px">${(r.total/total*100).toFixed(1)}%</span></div>`:'-'}</td>
+    </tr>`).join('');
+
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div><div class="page-title">溫室氣體排放總覽</div><div class="page-sub">依 ISO 14064-1 盤查邊界彙整</div></div>
+      <div class="header-controls">
+        ${yearSel(currentYear,"setYear(this.value)")}
+        ${siteSel(currentSite,"setSite(this.value)")}
+      </div>
+    </div>
+    <div class="metric-grid">
+      ${metricCard('年度總排放',total.toFixed(3),'公噸 CO₂e','#0F6E56')}
+      ${metricCard('類別一 直接排放',sum.total.cat1.toFixed(3),'公噸 CO₂e','#0F6E56')}
+      ${metricCard('類別二 外購電力',sum.total.cat2.toFixed(3),'公噸 CO₂e','#185FA5')}
+      ${metricCard('已填報月份',filledMonths,'/ 12 個月','#854F0B')}
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title">月排放量趨勢（公噸 CO₂e）</div>
+        <canvas id="barChart" width="600" height="220"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title">排放來源占比</div>
+        <canvas id="pieChart" width="280" height="220"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">場域排放比較</div>
+      <table>
+        <thead><tr><th>場域</th><th>類別一 (公噸CO₂e)</th><th>類別二 (公噸CO₂e)</th><th>合計 (公噸CO₂e)</th><th>佔比</th></tr></thead>
+        <tbody>${breakdownRows}</tbody>
+      </table>
+    </div>`;
+
+  const chartData=sum.months.map((m,i)=>({name:MONTHS[i],cat1:+(m.cat1||0).toFixed(4),cat2:+(m.cat2||0).toFixed(4)}));
+  drawBarChart('barChart',chartData);
+  drawPieChart('pieChart',pieData);
+}
+
+// ── Elec Entry ──
+function pageElec(){
+  recalcYear(currentYear);
+  const yr=String(currentYear),mo=String(currentMonth);
+  const existing=(REC[yr]?.[mo]?.electricity)||[];
+  const factor=getElecFactor(currentYear);
+  const totalKwh=existing.reduce((s,r)=>s+r.kwh,0);
+  const totalEmit=existing.reduce((s,r)=>s+(r.emission||0),0);
+
+  const rows=existing.map(r=>`
+    <tr>
+      <td>${badge(r.site,'#185FA5')}</td>
+      <td style="font-family:monospace;font-size:12px">${esc(r.meter)}</td>
+      <td style="font-weight:600">${numFmt(r.kwh)}</td>
+      <td style="color:#718096">${r.amount?numFmt(r.amount):'-'}</td>
+      <td style="font-size:12px;color:#718096">${esc(r.startDate||'')} ~ ${esc(r.endDate||'')}</td>
+      <td style="font-weight:600;color:#185FA5">${fmt(r.emission)}</td>
+      <td><button class="btn btn-danger" onclick="delElec('${r.id}')">刪除</button></td>
+    </tr>`).join('');
+
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div><div class="page-title">外購電力填報</div><div class="page-sub">類別二 — 電力排放係數：${factor} kgCO₂e/度</div></div>
+      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${monthSel(currentMonth,"setMonth(this.value)")}</div>
+    </div>
+    <div class="metric-grid" style="grid-template-columns:1fr 1fr">
+      ${metricCard('本月總用電量',totalKwh.toFixed(0),'度','#185FA5')}
+      ${metricCard('本月排放量',totalEmit.toFixed(4),'公噸 CO₂e','#185FA5')}
+    </div>
+    <div class="card">
+      <div class="section-title">新增帳單紀錄</div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">場域</div><select id="ef-site" style="min-width:70px"><option>汐止</option><option>南港</option></select></div>
+        <div class="form-group flex1"><div class="form-label">電號</div><input id="ef-meter" placeholder="電號"></div>
+        <div class="form-group"><div class="form-label">度數</div><input id="ef-kwh" type="number" placeholder="度" style="width:90px"></div>
+        <div class="form-group"><div class="form-label">金額(元)</div><input id="ef-amt" type="number" placeholder="元" style="width:100px"></div>
+        <div class="form-group"><div class="form-label">起始日</div><input id="ef-s" type="date" style="width:135px"></div>
+        <div class="form-group"><div class="form-label">結束日</div><input id="ef-e" type="date" style="width:135px"></div>
+        <div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="addElec()">新增</button></div>
+      </div>
+      <button class="btn btn-ghost" onclick="toggleImportBox()" style="margin-top:8px">📋 貼上 Excel 資料批次匯入</button>
+      <div id="importBox" style="display:none;margin-top:12px">
+        <div class="form-label" style="margin-bottom:6px">格式：場域、電號、度數、金額、起始日、結束日（Tab 或逗號分隔）</div>
+        <textarea id="importText" rows="4" style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;font-family:monospace" placeholder="汐止&#9;2935001313&#9;1073&#9;2678&#9;2025-01-01&#9;2025-03-01"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-primary" onclick="batchImportElec()">確認匯入</button>
+          <button class="btn btn-ghost" onclick="toggleImportBox()">取消</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">本月電力紀錄 (${existing.length} 筆)</div>
+      ${existing.length===0?'<div class="empty">尚無紀錄，請填寫上方表單</div>':
+      `<div style="overflow-x:auto"><table>
+        <thead><tr><th>場域</th><th>電號</th><th>度數</th><th>金額(元)</th><th>帳單期間</th><th>排放量 CO₂e</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`}
+    </div>`;
+}
+
+// ── Cat1 Entry ──
+let cat1Sub='refrigerant';
+function pageCat1(){
+  recalcYear(currentYear);
+  const yr=String(currentYear),mo=String(currentMonth);
+  const md=REC[yr]?.[mo]||{};
+  const cat1Total=[...(md.refrigerant||[]),...(md.fuel||[]),...(md.septicTank||[])].reduce((s,r)=>s+(r.emission||0),0);
+
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div><div class="page-title">直接排放填報</div><div class="page-sub">類別一 — 逸散源 / 移動源 / 化糞池</div></div>
+      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${monthSel(currentMonth,"setMonth(this.value)")}</div>
+    </div>
+    <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr">
+      ${metricCard('本月類別一總排放',cat1Total.toFixed(4),'公噸 CO₂e','#0F6E56')}
+      ${metricCard('冷媒逸散紀錄',(md.refrigerant||[]).length,'筆','#854F0B')}
+      ${metricCard('移動源紀錄',(md.fuel||[]).length,'筆','#993556')}
+    </div>
+    <div class="tabs">
+      <button class="tab${cat1Sub==='refrigerant'?' active':''}" onclick="setCat1Sub('refrigerant')">冷媒逸散源</button>
+      <button class="tab${cat1Sub==='fuel'?' active':''}" onclick="setCat1Sub('fuel')">移動源（加油）</button>
+      <button class="tab${cat1Sub==='septicTank'?' active':''}" onclick="setCat1Sub('septicTank')">化糞池</button>
+    </div>
+    <div id="cat1-content"></div>`;
+  renderCat1Sub();
+}
+
+function renderCat1Sub(){
+  const yr=String(currentYear),mo=String(currentMonth);
+  const md=REC[yr]?.[mo]||{};
+  const el=document.getElementById('cat1-content');if(!el)return;
+  if(cat1Sub==='refrigerant'){
+    const rows=(md.refrigerant||[]).map(r=>`
+      <tr>
+        <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td>
+        <td style="font-size:12px">${esc(r.substance)}</td>
+        <td>${r.kg}</td><td style="color:#718096">${r.gwp??'未公告'}</td>
+        <td style="color:#718096">${r.leakRate}</td>
+        <td style="font-weight:600;color:#854F0B">${r.emission!=null?r.emission.toFixed(6):'N/A'}</td>
+        <td><button class="btn btn-danger" onclick="delCat1('refrigerant','${r.id}')">刪除</button></td>
+      </tr>`).join('');
+    el.innerHTML=`
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-title">新增冷媒逸散紀錄</div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">場域</div><select id="rf-site"><option>汐止</option><option>南港</option></select></div>
+          <div class="form-group flex1"><div class="form-label">設備名稱</div><input id="rf-dev" placeholder="型號"></div>
+          <div class="form-group" style="min-width:160px"><div class="form-label">冷媒種類</div>
+            <select id="rf-sub" onchange="syncGwp()">${COEFF.refrigerants.map(r=>`<option>${esc(r.name)}</option>`).join('')}</select></div>
+          <div class="form-group"><div class="form-label">充填量(kg)</div><input id="rf-kg" type="number" placeholder="kg" style="width:90px"></div>
+          <div class="form-group"><div class="form-label">GWP 值</div><input id="rf-gwp" type="number" value="1430" style="width:90px"></div>
+          <div class="form-group"><div class="form-label">逸散率</div><input id="rf-lr" type="number" value="0.003" style="width:90px"></div>
+          <div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="addRefrig()">新增</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">冷媒逸散紀錄 (${(md.refrigerant||[]).length} 筆)</div>
+        ${(md.refrigerant||[]).length===0?'<div class="empty">尚無紀錄</div>':
+        `<table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+      </div>`;
+  }
+  else if(cat1Sub==='fuel'){
+    const rows=(md.fuel||[]).map(r=>`
+      <tr>
+        <td>${badge(r.site,'#993556')}</td><td>${esc(r.vehicle)}</td>
+        <td style="font-size:12px">${esc(r.fuelType)}</td>
+        <td>NT$${numFmt(r.amount)}</td>
+        <td style="color:#718096">${r.pricePerLiter}</td>
+        <td style="color:#718096">${r.pricePerLiter?(r.amount/r.pricePerLiter).toFixed(1)+' L':'-'}</td>
+        <td style="font-weight:600;color:#993556">${fmt(r.emission,6)}</td>
+        <td><button class="btn btn-danger" onclick="delCat1('fuel','${r.id}')">刪除</button></td>
+      </tr>`).join('');
+    el.innerHTML=`
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-title">新增移動源紀錄</div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">場域</div><select id="ff-site"><option>汐止</option><option>南港</option></select></div>
+          <div class="form-group flex1"><div class="form-label">車牌</div><input id="ff-veh" placeholder="車牌號碼"></div>
+          <div class="form-group"><div class="form-label">油種</div><select id="ff-ft"><option>車用汽油(92)</option><option>車用汽油(95)</option><option>柴油</option></select></div>
+          <div class="form-group"><div class="form-label">加油金額(元)</div><input id="ff-amt" type="number" placeholder="元" style="width:110px"></div>
+          <div class="form-group"><div class="form-label">油價(元/公升)</div><input id="ff-price" type="number" placeholder="30.8" style="width:100px"></div>
+          <div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="addFuelRec()">新增</button></div>
+        </div>
+        <div style="font-size:12px;color:#718096;margin-top:8px">💡 系統自動算公升數 = 金額 ÷ 油價，再乘排放係數</div>
+      </div>
+      <div class="card">
+        <div class="section-title">移動源紀錄 (${(md.fuel||[]).length} 筆)</div>
+        ${(md.fuel||[]).length===0?'<div class="empty">尚無紀錄</div>':
+        `<table><thead><tr><th>場域</th><th>車輛</th><th>油種</th><th>加油金額</th><th>油價/公升</th><th>估計公升</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+      </div>`;
+  }
+  else{
+    const rows=(md.septicTank||[]).map(r=>`
+      <tr>
+        <td>${badge(r.site,'#533AB7')}</td>
+        <td>${r.male}</td><td>${r.female}</td>
+        <td>${r.workDays}</td><td>${r.hoursPerDay}</td>
+        <td style="font-weight:600;color:#533AB7">${fmt(r.emission,6)}</td>
+        <td><button class="btn btn-danger" onclick="delCat1('septicTank','${r.id}')">刪除</button></td>
+      </tr>`).join('');
+    el.innerHTML=`
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-title">新增化糞池紀錄</div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">場域</div><select id="sf-site"><option>汐止</option><option>南港</option></select></div>
+          <div class="form-group"><div class="form-label">男性人數</div><input id="sf-m" type="number" style="width:90px"></div>
+          <div class="form-group"><div class="form-label">女性人數</div><input id="sf-f" type="number" style="width:90px"></div>
+          <div class="form-group"><div class="form-label">工作天數</div><input id="sf-d" type="number" style="width:90px"></div>
+          <div class="form-group"><div class="form-label">每日工時</div><input id="sf-h" type="number" value="8" style="width:80px"></div>
+          <div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="addSepticRec()">新增</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">化糞池紀錄 (${(md.septicTank||[]).length} 筆)</div>
+        ${(md.septicTank||[]).length===0?'<div class="empty">尚無紀錄</div>':
+        `<table><thead><tr><th>場域</th><th>男</th><th>女</th><th>工作天</th><th>工時/天</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+      </div>`;
+  }
+}
+
+// ── Coefficients ──
+let coeffSub='electricity';
+function pageCoeff(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header"><div><div class="page-title">係數集中管理</div><div class="page-sub">所有排放係數及 GWP 值在此統一維護</div></div></div>
+    <div class="tabs">
+      <button class="tab${coeffSub==='electricity'?' active':''}" onclick="setCoeffSub('electricity')">電力排放係數</button>
+      <button class="tab${coeffSub==='refrigerants'?' active':''}" onclick="setCoeffSub('refrigerants')">冷媒 GWP 值</button>
+      <button class="tab${coeffSub==='fuel'?' active':''}" onclick="setCoeffSub('fuel')">汽油排放係數</button>
+      <button class="tab${coeffSub==='septic'?' active':''}" onclick="setCoeffSub('septic')">化糞池係數</button>
+    </div>
+    <div id="coeff-content"></div>`;
+  renderCoeffSub();
+}
+function renderCoeffSub(){
+  const el=document.getElementById('coeff-content');if(!el)return;
+  if(coeffSub==='electricity'){
+    const rows=COEFF.electricity.map((e,i)=>`
+      <tr>
+        <td style="font-weight:600">${e.year}</td>
+        <td><input type="number" value="${e.factor}" step="0.001" style="width:90px;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:13px" onchange="updateElecFactor(${i},this.value)"></td>
+        <td style="color:#718096">${esc(e.note||'')}</td>
+        <td><button class="btn btn-danger" onclick="delElecRow(${i})">刪除</button></td>
+      </tr>`).join('');
+    el.innerHTML=`
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="section-title" style="margin:0">年度電力排放係數（kgCO₂e/度）</div>
+          <button class="btn btn-primary" onclick="recomputeAll()">🔄 重算全年排放量</button>
+        </div>
+        <table style="margin-bottom:16px">
+          <thead><tr><th>年度</th><th>排放係數</th><th>備註</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #e2e8f0">
+          <input id="ne-yr" type="number" value="2026" style="width:80px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="ne-fac" type="number" placeholder="係數值" style="width:100px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="ne-note" placeholder="備註" style="flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <button class="btn btn-primary" onclick="addElecRow()">新增年度</button>
+        </div>
+      </div>`;
+  }
+  else if(coeffSub==='refrigerants'){
+    const rows=COEFF.refrigerants.map((r,i)=>`
+      <tr>
+        <td style="font-weight:500">${esc(r.name)}</td>
+        <td>${r.gwp!=null?`<span class="badge" style="background:#854F0B18;color:#854F0B;border:1px solid #854F0B30">${r.gwp}</span>`:'<span class="badge-pending">未公告</span>'}</td>
+        <td style="color:#718096">${r.ar||'-'}</td>
+        <td><button class="btn btn-danger" onclick="delRefrigRow(${i})">刪除</button></td>
+      </tr>`).join('');
+    el.innerHTML=`
+      <div class="card">
+        <div class="section-title">冷媒種類與 GWP 值（IPCC AR6）</div>
+        <table style="margin-bottom:16px">
+          <thead><tr><th>冷媒名稱</th><th>GWP 值</th><th>AR 版本</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #e2e8f0">
+          <input id="nr-name" placeholder="冷媒名稱" style="flex:2;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="nr-gwp" type="number" placeholder="GWP 值" style="width:100px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="nr-ar" placeholder="AR6" style="width:70px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+          <button class="btn btn-primary" onclick="addRefrigRow()">新增</button>
+        </div>
+      </div>`;
+  }
+  else if(coeffSub==='fuel'){
+    const f=COEFF.fuel.gasoline92;
+    const fields=[['co2','CO₂ 排放係數 (kgCO₂/L)'],['ch4','CH₄ 排放係數 (kgCH₄/L)'],['n2o','N₂O 排放係數 (kgN₂O/L)'],['gwp_ch4','CH₄ GWP 值 (AR6)'],['gwp_n2o','N₂O GWP 值 (AR6)']];
+    el.innerHTML=`<div class="card"><div class="section-title">汽油排放係數（環境部 6.0.4）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        ${fields.map(([k,label])=>`
+          <div>
+            <div class="form-label" style="margin-bottom:6px">${label}</div>
+            <input type="number" step="0.000001" value="${f[k]}" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateFuelCoeff('${k}',this.value)">
+          </div>`).join('')}
+      </div></div>`;
+  }
+  else{
+    const cfg=COEFF.septicTank;
+    const fields=[['bo','Bo（BOD 最大 CH₄ 產生能力）'],['mcf','MCF（CH₄ 修正係數）'],['gwp_ch4','CH₄ GWP 值 (AR6)'],['bod_per_person_day','每人每日 BOD（公噸）'],['daily_hours','每日工時（小時）']];
+    el.innerHTML=`<div class="card"><div class="section-title">化糞池排放係數</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        ${fields.map(([k,label])=>`
+          <div>
+            <div class="form-label" style="margin-bottom:6px">${label}</div>
+            <input type="number" step="0.000001" value="${cfg[k]}" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateSepticCoeff('${k}',this.value)">
+          </div>`).join('')}
+      </div>
+      <div class="info-box">
+        <strong>計算公式：</strong>人時 = 總人數 × 每日工時 × 工作天數<br>
+        排放量 = (人時 ÷ 每日工時 × BOD/人日) × Bo × MCF × GWP(CH₄)
+      </div>
+    </div>`;
+  }
+}
+
+// ── Report ──
+function pageReport(){
+  recalcYear(currentYear);
+  const sum=getSummary(currentYear);
+  const bd=getBreakdown(currentYear);
+  const total=+(sum.total.cat1+sum.total.cat2).toFixed(4);
+  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+  const monthRows=sum.months.map((m,i)=>{
+    const mt=m.cat1+m.cat2;
+    const hasData=REC[String(currentYear)]?.[String(i+1)];
+    return`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
+      <td style="font-weight:500">${i+1} 月</td>
+      <td style="color:${m.cat1>0?'#0F6E56':'#718096'}">${m.cat1>0?m.cat1.toFixed(6):'—'}</td>
+      <td style="color:${m.cat2>0?'#185FA5':'#718096'}">${m.cat2>0?m.cat2.toFixed(6):'—'}</td>
+      <td style="font-weight:${mt>0?600:400}">${mt>0?mt.toFixed(6):'—'}</td>
+      <td>${!hasData?'<span class="badge-pending">待填報</span>':''}</td>
+    </tr>`;
+  }).join('');
+
+  const bdRows=bd.map(r=>`
+    <tr>
+      <td style="font-weight:600">${r.site}</td>
+      <td style="color:#0F6E56">${r.cat1.toFixed(6)}</td>
+      <td style="color:#185FA5">${r.cat2.toFixed(6)}</td>
+      <td style="font-weight:600">${r.total.toFixed(6)}</td>
+      <td>${total>0?`<div style="display:flex;align-items:center;gap:8px"><div class="prog-bar"><div class="prog-fill" style="width:${(r.total/total*100).toFixed(1)}%"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56">${(r.total/total*100).toFixed(1)}%</span></div>`:'-'}</td>
+    </tr>`).join('');
+
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div><div class="page-title">報表輸出</div><div class="page-sub">ISO 14064-1 溫室氣體排放盤查彙整</div></div>
+      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}<button class="btn btn-primary" onclick="exportCSV()">⬇ 匯出 CSV</button></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-weight:700;font-size:16px">公信電子股份有限公司</div>
+        <div style="font-size:13px;color:#718096">${currentYear} 年度溫室氣體排放盤查彙整表</div>
+      </div>
+      <div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#718096">
+        <span>盤查邊界：汐止廠 / 南港廠</span>
+        <span>盤查期間：${currentYear}/01/01 ~ ${currentYear}/12/31</span>
+        <span>盤查依據：ISO 14064-1：2018</span>
+      </div>
+      <table>
+        <thead style="background:#0d2d20"><tr>
+          ${['月份','類別一 直接排放(公噸CO₂e)','類別二 外購電力(公噸CO₂e)','月合計(公噸CO₂e)','備註'].map(h=>`<th style="color:#fff;padding:9px 12px">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${monthRows}
+          <tr style="background:#e8f5e9;border-top:2px solid #0F6E56">
+            <td style="font-weight:700;padding:10px 12px">年度合計</td>
+            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${sum.total.cat1.toFixed(6)}</td>
+            <td style="font-weight:700;color:#185FA5;padding:10px 12px">${sum.total.cat2.toFixed(6)}</td>
+            <td style="font-weight:700;padding:10px 12px">${total.toFixed(6)}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="section-title">各場域排放彙整</div>
+      <table>
+        <thead><tr><th>場域</th><th>類別一 (公噸CO₂e)</th><th>類別二 (公噸CO₂e)</th><th>合計 (公噸CO₂e)</th><th>占全公司(%)</th></tr></thead>
+        <tbody>${bdRows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ── Import ──
+let importFileType=null, importYear=2025, importPreview=null;
+function pageImport(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header"><div><div class="page-title">匯入現有 Excel</div><div class="page-sub">直接上傳 Excel 檔案，系統自動解析並寫入</div></div></div>
+    <div id="import-body"></div>`;
+  renderImportStep('select');
+}
+function renderImportStep(step){
+  const el=document.getElementById('import-body');if(!el)return;
+  if(step==='select'){
+    el.innerHTML=`
+      <div class="import-cards">
+        <div class="import-card${importFileType==='elec'?' selected':''}" onclick="setImportType('elec')">
+          <div style="font-size:22px;margin-bottom:10px">⚡</div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:6px">類別二：外購電力</div>
+          <div style="font-size:12px;color:#718096;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別二-外購電力碳排計算.xlsx</div>
+          <div style="font-size:13px;color:#718096">解析各場域工作表的電號、度數、金額、帳單日期</div>
+        </div>
+        <div class="import-card${importFileType==='cat1'?' selected':''}" onclick="setImportType('cat1')">
+          <div style="font-size:22px;margin-bottom:10px">🏭</div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:6px">類別一：直接排放</div>
+          <div style="font-size:12px;color:#718096;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別一-直接排放碳排計算.xlsx</div>
+          <div style="font-size:13px;color:#718096">解析冷媒逸散源、移動源（加油）、化糞池三個工作表</div>
+        </div>
+      </div>
+      ${importFileType?`
+      <div class="card">
+        <div class="section-title">上傳設定</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:13px;color:#718096">資料年度：</div>
+          ${yearSel(importYear,"setImportYear(this.value)")}
+          <div style="font-size:12px;color:#718096">（用於對應排放係數）</div>
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:10px;background:#0F6E56;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer;font-size:13px;font-weight:500">
+          📂 選擇 Excel 檔案（.xlsx）
+          <input type="file" accept=".xlsx,.xls" onchange="handleXlsxFile(this)" style="display:none">
+        </label>
+        <div id="import-status" style="margin-top:12px;font-size:13px;color:#718096"></div>
+      </div>`:''}`;
+  }
+  else if(step==='preview'&&importPreview){
+    let previewHtml='';
+    if(importPreview.type==='elec'){
+      const rows=importPreview.rows.map((r,i)=>`
+        <tr style="background:${i%2===0?'#fafafa':'#fff'}">
+          <td style="font-weight:600">${r.month} 月</td>
+          <td>${badge(r.site,'#185FA5')}</td>
+          <td style="font-family:monospace;font-size:12px">${esc(r.meter)}</td>
+          <td style="font-weight:600">${numFmt(r.kwh)}</td>
+          <td style="color:#718096">${r.amount>0?numFmt(r.amount):'—'}</td>
+          <td style="color:#718096;font-size:12px">${esc(r.startDate||'—')}</td>
+          <td style="color:#718096;font-size:12px">${esc(r.endDate||'—')}</td>
+          <td style="color:#185FA5;font-weight:600">${(r.kwh*getElecFactor(importYear)/1000).toFixed(4)}</td>
+        </tr>`).join('');
+      previewHtml=`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="section-title" style="margin:0">電力帳單預覽（${importPreview.rows.length} 筆）</div>
+          <button class="btn btn-primary" onclick="commitImport()">✅ 確認匯入 ${importYear} 年</button>
+        </div>
+        <div style="overflow-x:auto;max-height:360px;overflow-y:auto">
+          <table><thead><tr><th>月份</th><th>場域</th><th>電號</th><th>度數</th><th>金額</th><th>起始日</th><th>結束日</th><th>估算排放(公噸)</th></tr></thead>
+          <tbody>${rows}</tbody></table>
+        </div></div>`;
+    }else{
+      if(importPreview.refrigerant.length){
+        previewHtml+=`<div class="card" style="margin-bottom:14px">
+          <div class="section-title">冷媒逸散源（${importPreview.refrigerant.length} 筆）— 存入第 1 月</div>
+          <table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th></tr></thead>
+          <tbody>${importPreview.refrigerant.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
+            <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td><td>${esc(r.substance)}</td>
+            <td>${r.kg}</td><td>${r.gwp??'未公告'}</td><td style="color:#718096">${r.leakRate}</td></tr>`).join('')}
+          </tbody></table></div>`;
+      }
+      if(importPreview.fuel.length){
+        previewHtml+=`<div class="card" style="margin-bottom:14px">
+          <div class="section-title">移動源（${importPreview.fuel.length} 筆）</div>
+          <table><thead><tr><th>月份</th><th>車輛</th><th>油種</th><th>加油金額</th><th>油價/L</th></tr></thead>
+          <tbody>${importPreview.fuel.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
+            <td style="font-weight:600">${r.month} 月</td><td>${esc(r.vehicle)}</td><td>${esc(r.fuelType)}</td>
+            <td>NT$${numFmt(r.amount)}</td><td style="color:#718096">${r.pricePerLiter>0?r.pricePerLiter:'未填'}</td></tr>`).join('')}
+          </tbody></table></div>`;
+      }
+      if(importPreview.septic.length){
+        previewHtml+=`<div class="card" style="margin-bottom:14px">
+          <div class="section-title">化糞池（${importPreview.septic.length} 筆）</div>
+          <table><thead><tr><th>月份</th><th>場域</th><th>男</th><th>女</th><th>工作天</th><th>工時</th></tr></thead>
+          <tbody>${importPreview.septic.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
+            <td style="font-weight:600">${r.month} 月</td><td>${badge(r.site,'#533AB7')}</td>
+            <td>${r.male}</td><td>${r.female}</td><td>${r.workDays}</td><td style="color:#718096">${r.hoursPerDay}</td></tr>`).join('')}
+          </tbody></table></div>`;
+      }
+      previewHtml+=`<div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="commitImport()">✅ 確認匯入 ${importYear} 年</button>
+        <button class="btn btn-ghost" onclick="resetImport()">重新選擇</button></div>`;
+    }
+    el.innerHTML=`<div style="margin-bottom:16px"><button class="btn btn-ghost" onclick="resetImport()">← 重新選擇</button></div>${previewHtml}`;
+  }
+  else if(step==='done'){
+    el.innerHTML=`<div class="card"><div style="text-align:center;padding:40px 0">
+      <div style="font-size:48px;margin-bottom:16px">✅</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">匯入完成</div>
+      <div style="font-size:13px;color:#718096;margin-bottom:24px">資料已寫入 ${importYear} 年，請前往儀表板查看</div>
+      <button class="btn btn-primary" onclick="resetImport()">繼續匯入另一份</button>
+    </div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Action handlers
+// ═══════════════════════════════════════════════
+function setYear(v){currentYear=+v;recalcYear(currentYear);renderMain();}
+function setMonth(v){currentMonth=+v;renderMain();}
+function setSite(v){currentSite=v;renderMain();}
+function setCat1Sub(s){cat1Sub=s;pageCat1();}
+function setCoeffSub(s){coeffSub=s;renderCoeffSub();}
+function setImportType(t){importFileType=t;renderImportStep('select');}
+function setImportYear(v){importYear=+v;}
+function resetImport(){importPreview=null;importFileType=null;renderImportStep('select');}
+
+function ensurePath(yr,mo){
+  if(!REC[yr])REC[yr]={};
+  if(!REC[yr][mo])REC[yr][mo]={electricity:[],refrigerant:[],fuel:[],septicTank:[]};
+}
+
+// Elec
+function toggleImportBox(){const b=document.getElementById('importBox');if(b)b.style.display=b.style.display==='none'?'block':'none';}
+function addElec(){
+  const meter=document.getElementById('ef-meter')?.value?.trim();
+  const kwh=parseFloat(document.getElementById('ef-kwh')?.value);
+  if(!meter||!kwh)return;
+  const yr=String(currentYear),mo=String(currentMonth);
+  ensurePath(yr,mo);
+  REC[yr][mo].electricity.push({
+    id:Date.now().toString(),
+    site:document.getElementById('ef-site').value,
+    meter,kwh,
+    amount:parseFloat(document.getElementById('ef-amt')?.value)||0,
+    startDate:document.getElementById('ef-s')?.value||'',
+    endDate:document.getElementById('ef-e')?.value||'',
+    emission:calcElec(kwh,currentYear)
+  });
+  saveRec(REC);toast('已新增電力紀錄');pageElec();
+}
+function delElec(id){
+  const yr=String(currentYear),mo=String(currentMonth);
+  if(REC[yr]?.[mo]?.electricity)REC[yr][mo].electricity=REC[yr][mo].electricity.filter(r=>r.id!==id);
+  saveRec(REC);toast('已刪除','info');pageElec();
+}
+function batchImportElec(){
+  const text=document.getElementById('importText')?.value;if(!text)return;
+  const lines=text.trim().split('\n').filter(l=>l.trim());
+  const parsed=lines.map(line=>{
+    const pts=line.split(/[\t,]/);if(pts.length<3)return null;
+    const kwh=parseFloat(pts[2])||0;
+    return{id:Date.now()+Math.random(),site:pts[0]?.trim()||'汐止',meter:pts[1]?.trim()||'',kwh,amount:parseFloat(pts[3])||0,startDate:pts[4]?.trim()||'',endDate:pts[5]?.trim()||'',emission:calcElec(kwh,currentYear)};
+  }).filter(Boolean);
+  if(!parsed.length){toast('格式錯誤','error');return;}
+  const yr=String(currentYear),mo=String(currentMonth);
+  ensurePath(yr,mo);
+  REC[yr][mo].electricity=[...REC[yr][mo].electricity,...parsed];
+  saveRec(REC);toast(`已匯入 ${parsed.length} 筆`);pageElec();
+}
+
+// Cat1
+function syncGwp(){
+  const sub=document.getElementById('rf-sub')?.value;
+  const found=COEFF.refrigerants.find(r=>r.name===sub);
+  const gwpEl=document.getElementById('rf-gwp');
+  if(gwpEl&&found?.gwp)gwpEl.value=found.gwp;
+}
+function addRefrig(){
+  const kg=parseFloat(document.getElementById('rf-kg')?.value);if(!kg)return;
+  const yr=String(currentYear),mo=String(currentMonth);
+  ensurePath(yr,mo);
+  const gwp=parseFloat(document.getElementById('rf-gwp')?.value)||null;
+  const leakRate=parseFloat(document.getElementById('rf-lr')?.value)||0.003;
+  REC[yr][mo].refrigerant.push({id:Date.now().toString(),site:document.getElementById('rf-site').value,device:document.getElementById('rf-dev')?.value||'',substance:document.getElementById('rf-sub')?.value||'',kg,gwp,leakRate,emission:calcRefrig(kg,leakRate,gwp)});
+  saveRec(REC);toast('已新增冷媒紀錄');renderCat1Sub();
+}
+function addFuelRec(){
+  const amt=parseFloat(document.getElementById('ff-amt')?.value);
+  const price=parseFloat(document.getElementById('ff-price')?.value);
+  if(!amt||!price)return;
+  const yr=String(currentYear),mo=String(currentMonth);
+  ensurePath(yr,mo);
+  REC[yr][mo].fuel.push({id:Date.now().toString(),site:document.getElementById('ff-site').value,vehicle:document.getElementById('ff-veh')?.value||'',fuelType:document.getElementById('ff-ft')?.value||'車用汽油(92)',amount:amt,pricePerLiter:price,emission:calcFuel(amt,price)});
+  saveRec(REC);toast('已新增移動源紀錄');renderCat1Sub();
+}
+function addSepticRec(){
+  const male=parseInt(document.getElementById('sf-m')?.value)||0;
+  const workDays=parseInt(document.getElementById('sf-d')?.value);
+  if(!workDays)return;
+  const yr=String(currentYear),mo=String(currentMonth);
+  ensurePath(yr,mo);
+  const female=parseInt(document.getElementById('sf-f')?.value)||0;
+  const hoursPerDay=parseInt(document.getElementById('sf-h')?.value)||8;
+  REC[yr][mo].septicTank.push({id:Date.now().toString(),site:document.getElementById('sf-site').value,male,female,workDays,hoursPerDay,emission:calcSeptic(male,female,workDays,hoursPerDay)});
+  saveRec(REC);toast('已新增化糞池紀錄');renderCat1Sub();
+}
+function delCat1(type,id){
+  const yr=String(currentYear),mo=String(currentMonth);
+  if(REC[yr]?.[mo]?.[type])REC[yr][mo][type]=REC[yr][mo][type].filter(r=>r.id!==id);
+  saveRec(REC);toast('已刪除','info');renderCat1Sub();
+}
+
+// Coefficients
+function updateElecFactor(i,v){COEFF.electricity[i].factor=+v;saveCoeff(COEFF);}
+function delElecRow(i){COEFF.electricity=COEFF.electricity.filter((_,j)=>j!==i);saveCoeff(COEFF);renderCoeffSub();}
+function addElecRow(){
+  const yr=+document.getElementById('ne-yr')?.value;
+  const fac=parseFloat(document.getElementById('ne-fac')?.value);
+  if(!fac)return;
+  COEFF.electricity.push({year:yr,factor:fac,note:document.getElementById('ne-note')?.value||''});
+  saveCoeff(COEFF);renderCoeffSub();toast('已新增電力係數');
+}
+function delRefrigRow(i){COEFF.refrigerants=COEFF.refrigerants.filter((_,j)=>j!==i);saveCoeff(COEFF);renderCoeffSub();}
+function addRefrigRow(){
+  const name=document.getElementById('nr-name')?.value?.trim();if(!name)return;
+  const gwp=document.getElementById('nr-gwp')?.value;
+  COEFF.refrigerants.push({name,gwp:gwp?+gwp:null,ar:document.getElementById('nr-ar')?.value||'AR6'});
+  saveCoeff(COEFF);renderCoeffSub();toast('已新增冷媒');
+}
+function updateFuelCoeff(k,v){COEFF.fuel.gasoline92[k]=+v;saveCoeff(COEFF);}
+function updateSepticCoeff(k,v){COEFF.septicTank[k]=+v;saveCoeff(COEFF);}
+function recomputeAll(){
+  recalcYear(currentYear);saveRec(REC);
+  toast('排放量已根據最新係數重新計算');
+}
+
+// Report - CSV export
+function exportCSV(){
+  recalcYear(currentYear);
+  const sum=getSummary(currentYear);
+  const rows=[['月份','類別一 直接排放(公噸CO₂e)','類別二 外購電力(公噸CO₂e)','合計(公噸CO₂e)']];
+  sum.months.forEach((m,i)=>rows.push([`${i+1}月`,m.cat1.toFixed(6),m.cat2.toFixed(6),(m.cat1+m.cat2).toFixed(6)]));
+  const total=+(sum.total.cat1+sum.total.cat2).toFixed(6);
+  rows.push(['合計',sum.total.cat1.toFixed(6),sum.total.cat2.toFixed(6),total]);
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`GHG_${currentYear}_彙整表.csv`;a.click();
+  toast('CSV 已下載');
+}
+
+// Excel import
+function handleXlsxFile(input){
+  const file=input.files[0];if(!file)return;
+  const status=document.getElementById('import-status');
+  if(status)status.textContent='解析中⋯';
+  if(typeof XLSX==='undefined'){
+    if(status)status.innerHTML='<span style="color:#C53030">⚠️ 請連接網路後重新開啟，XLSX 解析套件需要網路載入一次</span>';
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      if(importFileType==='elec')parseElecXlsx(wb);
+      else parseCat1Xlsx(wb);
+    }catch(err){
+      if(status)status.innerHTML=`<span style="color:#C53030">⚠️ 解析失敗：${esc(err.message)}</span>`;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+function excelDateToISO(serial){
+  if(!serial||isNaN(serial))return'';
+  return new Date((serial-25569)*86400*1000).toISOString().slice(0,10);
+}
+function inferSite(name){
+  const s=String(name||'');
+  if(s.includes('南港'))return'南港';
+  return'汐止';
+}
+function dateToMonth(iso){return iso&&iso.length>=7?parseInt(iso.slice(5,7)):null;}
+
+function parseElecXlsx(wb){
+  const rows=[];
+  const skip=['表單使用說明','說明','使用說明'];
+  wb.SheetNames.forEach(name=>{
+    if(skip.some(s=>name.includes(s)))return;
+    const data=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:null});
+    const site=inferSite(name);
+    data.forEach((row,ri)=>{
+      if(!row||!row[0])return;
+      const meter=String(row[0]).trim();
+      if(!/^\d{8,}/.test(meter))return;
+      const kwh=parseFloat(row[5]);
+      if(!kwh||isNaN(kwh)||kwh<=0)return;
+      const startDate=excelDateToISO(row[2]),endDate=excelDateToISO(row[3]);
+      rows.push({id:`imp_e_${Date.now()}_${ri}`,site,meter,kwh,amount:parseFloat(row[6])||0,startDate,endDate,month:dateToMonth(startDate)||1,emission:null});
+    });
+  });
+  if(!rows.length){document.getElementById('import-status').innerHTML='<span style="color:#C53030">⚠️ 未找到有效電力帳單資料</span>';return;}
+  importPreview={type:'elec',rows};
+  renderImportStep('preview');
+}
+function parseCat1Xlsx(wb){
+  const result={refrigerant:[],fuel:[],septic:[]};
+  wb.SheetNames.forEach(name=>{
+    const data=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:null});
+    if(name.includes('冷媒')){
+      data.forEach((row,ri)=>{
+        if(!row||ri===0)return;
+        const site=String(row[0]||'').trim();
+        if(!['汐止','南港','林口'].includes(site))return;
+        const kg=parseFloat(row[5]);if(isNaN(kg)||kg<=0)return;
+        result.refrigerant.push({id:`imp_r_${Date.now()}_${ri}`,site,device:String(row[2]||''),substance:String(row[4]||''),kg,gwp:row[8]==='未公告'||!row[8]?null:parseFloat(row[8]),leakRate:parseFloat(row[9])||0.003,emission:null});
+      });
+    }
+    if(name.includes('移動源')){
+      data.forEach((row,ri)=>{
+        if(!row||ri===0)return;
+        const vehicle=String(row[0]||'').trim();
+        if(!vehicle||vehicle.includes('排放源'))return;
+        const amount=parseFloat(row[3]);if(isNaN(amount)||amount<=0)return;
+        result.fuel.push({id:`imp_f_${Date.now()}_${ri}`,site:'南港',vehicle,fuelType:String(row[1]||'車用汽油(92)'),amount,pricePerLiter:parseFloat(row[4])||0,month:dateToMonth(excelDateToISO(row[2]))||1,emission:null});
+      });
+    }
+    if(name.includes('化糞池碳排')){
+      let currentSite='汐止';
+      data.forEach((row,ri)=>{
+        if(!row)return;
+        if(row[0]==='汐止'||row[0]==='南港')currentSite=row[0];
+        const month=parseInt(row[1]),workDays=parseInt(row[2]);
+        if(!month||isNaN(workDays)||workDays<=0)return;
+        const male=parseInt(row[4])||0,female=parseInt(row[5])||0;
+        if(!male&&!female)return;
+        result.septic.push({id:`imp_s_${Date.now()}_${ri}`,site:currentSite,month,workDays,hoursPerDay:parseInt(row[3])||8,male,female,emission:null});
+      });
+    }
+  });
+  if(!result.refrigerant.length&&!result.fuel.length&&!result.septic.length){
+    document.getElementById('import-status').innerHTML='<span style="color:#C53030">⚠️ 未找到有效資料，請確認是類別一直接排放檔案</span>';return;
+  }
+  importPreview={type:'cat1',...result};
+  renderImportStep('preview');
+}
+function commitImport(){
+  if(!importPreview)return;
+  const yr=String(importYear);
+  if(!REC[yr])REC[yr]={};
+  const ensure=m=>{const ms=String(m);if(!REC[yr][ms])REC[yr][ms]={electricity:[],refrigerant:[],fuel:[],septicTank:[]};};
+  if(importPreview.type==='elec'){
+    importPreview.rows.forEach(r=>{ensure(r.month);REC[yr][String(r.month)].electricity.push({...r,emission:calcElec(r.kwh,importYear)});});
+  }else{
+    importPreview.refrigerant.forEach(r=>{ensure(1);REC[yr]['1'].refrigerant.push(r);});
+    importPreview.fuel.forEach(r=>{ensure(r.month);REC[yr][String(r.month)].fuel.push(r);});
+    importPreview.septic.forEach(r=>{ensure(r.month);REC[yr][String(r.month)].septicTank.push(r);});
+  }
+  saveRec(REC);toast('✅ 資料已成功匯入');renderImportStep('done');
+}
+
+// ═══════════════════════════════════════════════
+// Router
+// ═══════════════════════════════════════════════
+function renderMain(){
+  if(currentTab==='dashboard')pageDashboard();
+  else if(currentTab==='entry-elec')pageElec();
+  else if(currentTab==='entry-cat1')pageCat1();
+  else if(currentTab==='coefficients')pageCoeff();
+  else if(currentTab==='report')pageReport();
+  else if(currentTab==='import')pageImport();
+  else if(currentTab==='scan')pageScan();
+}
+
+
+// ═══════════════════════════════════════════════
+// 帳單掃描頁
+// ═══════════════════════════════════════════════
+const SCAN_KEY='ghg_scanned_bills';
+function loadBills(){try{const s=localStorage.getItem(SCAN_KEY);return s?JSON.parse(s):[];}catch{return[];}}
+function saveBills(b){try{localStorage.setItem(SCAN_KEY,JSON.stringify(b));}catch{alert('儲存空間不足，請刪除部分舊佐證圖片');}}
+let BILLS=loadBills();
+
+function pageScan(){
+  const total=BILLS.length;
+  const pending=BILLS.filter(b=>b.status==='pending').length;
+  const done=BILLS.filter(b=>b.status==='committed').length;
+
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-title">帳單掃描匯入</div>
+        <div class="page-sub">上傳電費單或水費單圖片，Claude 自動解析並寫入盤查資料庫</div>
+      </div>
+      <div class="header-controls">
+        <button class="btn btn-ghost" onclick="clearCommitted()">清除已匯入佐證</button>
+      </div>
+    </div>
+
+    <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr">
+      ${metricCard('已掃描帳單',total,'份','#0F6E56')}
+      ${metricCard('待確認',pending,'份','#854F0B')}
+      ${metricCard('已匯入',done,'份','#185FA5')}
+    </div>
+
+    <!-- API Key 設定 -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title">Claude API 設定</div>
+      <div class="form-row" style="align-items:center">
+        <div class="form-group flex1">
+          <div class="form-label">Anthropic API Key（存在本機，不會上傳）</div>
+          <input id="apiKeyInput" type="password" placeholder="sk-ant-..." value="${localStorage.getItem('ghg_api_key')||''}" oninput="localStorage.setItem('ghg_api_key',this.value)">
+        </div>
+        <div class="form-group" style="justify-content:flex-end">
+          <div class="form-label">&nbsp;</div>
+          <button class="btn btn-primary" onclick="testApiKey()">測試連線</button>
+        </div>
+      </div>
+      <div id="apiStatus" style="margin-top:8px;font-size:12px;color:#718096"></div>
+    </div>
+
+    <!-- 上傳區 -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title">上傳帳單</div>
+      <div id="dropZone" onclick="document.getElementById('billFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#0F6E56'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="handleDrop(event)"
+        style="border:2px dashed #e2e8f0;border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px">
+        <div style="font-size:36px;margin-bottom:10px">📄</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">點擊或拖曳上傳帳單</div>
+        <div style="font-size:13px;color:#718096">支援 JPG、PNG、PDF（PDF 僅讀第一頁）<br>可一次選取多份帳單</div>
+        <input id="billFileInput" type="file" accept="image/*,.pdf" multiple onchange="handleFiles(this.files)" style="display:none">
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="form-label" style="white-space:nowrap">帳單類型：</div>
+        <select id="scanBillType" style="width:160px;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px">
+          <option value="auto">自動判斷</option>
+          <option value="electricity">電費單</option>
+          <option value="water">水費單</option>
+        </select>
+        <div class="form-label" style="white-space:nowrap">資料年度：</div>
+        ${yearSel(currentYear,"currentYear=+this.value")}
+      </div>
+    </div>
+
+    <!-- 待確認清單 -->
+    <div id="billList"></div>`;
+
+  renderBillList();
+}
+
+function renderBillList(){
+  const el=document.getElementById('billList');if(!el)return;
+  if(!BILLS.length){el.innerHTML='<div class="card"><div class="empty">尚無掃描記錄</div></div>';return;}
+
+  // 分群：待確認 / 已匯入
+  const pending=BILLS.filter(b=>b.status==='pending');
+  const committed=BILLS.filter(b=>b.status==='committed');
+
+  let html='';
+
+  if(pending.length){
+    html+=`<div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="section-title" style="margin:0">待確認（${pending.length} 份）— 請確認解析結果後匯入</div>
+        <button class="btn btn-primary" onclick="commitAll()">✅ 全部匯入</button>
+      </div>`;
+    pending.forEach(b=>{html+=renderBillCard(b,true);});
+    html+='</div>';
+  }
+
+  if(committed.length){
+    html+=`<div class="card">
+      <div class="section-title">已匯入佐證（${committed.length} 份）</div>`;
+    committed.forEach(b=>{html+=renderBillCard(b,false);});
+    html+='</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+function renderBillCard(b,editable){
+  const imgHtml=b.imageBase64?`<img src="${b.imageBase64}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer" onclick="previewImg('${b.id}')" title="點擊放大">`:'<div style="width:120px;height:90px;border-radius:8px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:24px;background:#f8f9fb">📄</div>';
+
+  const statusBadge=b.status==='pending'
+    ?`<span class="badge" style="background:#FFF7ED;color:#C05621;border:1px solid #FBD38D">待確認</span>`
+    :`<span class="badge" style="background:#F0FFF4;color:#276749;border:1px solid #9AE6B4">已匯入</span>`;
+
+  const parseResult=b.parsed?`
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        ${statusBadge}
+        <span style="font-size:13px;font-weight:600">${esc(b.parsed.billType==='electricity'?'電費單':'水費單')} — ${esc(b.parsed.site||'未知場域')}</span>
+        <span style="font-size:12px;color:#718096">${esc(b.parsed.period||'')}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px">
+        ${b.parsed.billType==='electricity'?`
+          <div><div class="form-label">電號</div><div style="font-family:monospace;font-size:12px">${esc(b.parsed.meter||'—')}</div></div>
+          <div><div class="form-label">用電量</div><div style="font-weight:600">${b.parsed.kwh||'—'} 度</div></div>
+          <div><div class="form-label">金額</div><div>NT$${b.parsed.amount?Number(b.parsed.amount).toLocaleString():'—'}</div></div>
+          <div><div class="form-label">起始日</div><div>${esc(b.parsed.startDate||'—')}</div></div>
+          <div><div class="form-label">結束日</div><div>${esc(b.parsed.endDate||'—')}</div></div>
+        `:`
+          <div><div class="form-label">水號</div><div style="font-family:monospace;font-size:12px">${esc(b.parsed.meter||'—')}</div></div>
+          <div><div class="form-label">用水量</div><div style="font-weight:600">${b.parsed.usage||'—'} 度</div></div>
+          <div><div class="form-label">金額</div><div>NT$${b.parsed.amount?Number(b.parsed.amount).toLocaleString():'—'}</div></div>
+          <div><div class="form-label">起始日</div><div>${esc(b.parsed.startDate||'—')}</div></div>
+          <div><div class="form-label">結束日</div><div>${esc(b.parsed.endDate||'—')}</div></div>
+        `}
+      </div>
+      ${b.parsed.note?`<div style="margin-top:8px;font-size:12px;color:#718096">📝 ${esc(b.parsed.note)}</div>`:''}
+      ${editable?`<div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary" onclick="commitBill('${b.id}')">✅ 確認匯入</button>
+        <button class="btn btn-ghost" onclick="editBill('${b.id}')">✏️ 修改</button>
+        <button class="btn btn-danger" onclick="deleteBill('${b.id}')">刪除</button>
+      </div>`:`<div style="margin-top:8px;font-size:11px;color:#718096">匯入於 ${esc(b.committedAt||'')}</div>`}
+    </div>`
+    :`<div style="flex:1;display:flex;align-items:center">
+      <div id="parse_status_${b.id}" style="color:#718096;font-size:13px">
+        ${b.status==='parsing'?'🔄 AI 解析中...':'⚠️ 解析失敗，請重試'}
+      </div>
+    </div>`;
+
+  return`<div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px solid #f0f4f8">
+    ${imgHtml}
+    ${parseResult}
+  </div>`;
+}
+
+// ── 圖片預覽 ──
+function previewImg(id){
+  const b=BILLS.find(x=>x.id===id);if(!b||!b.imageBase64)return;
+  const w=window.open('','_blank','width=800,height=600');
+  w.document.write(`<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${b.imageBase64}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`);
+}
+
+// ── 拖曳上傳 ──
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').style.borderColor='#e2e8f0';
+  handleFiles(e.dataTransfer.files);
+}
+
+// ── 處理檔案 ──
+async function handleFiles(files){
+  if(!files||!files.length)return;
+  const key=localStorage.getItem('ghg_api_key')||'';
+  if(!key){alert('請先填入 Anthropic API Key');return;}
+  const billType=document.getElementById('scanBillType')?.value||'auto';
+
+  for(const file of Array.from(files)){
+    const id='bill_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const bill={id,fileName:file.name,status:'parsing',imageBase64:null,parsed:null,createdAt:new Date().toLocaleString('zh-TW')};
+    BILLS.unshift(bill);saveBills(BILLS);renderBillList();
+
+    try{
+      // 轉 base64
+      const b64=await fileToBase64(file);
+      bill.imageBase64=b64;
+
+      // 呼叫 Claude API
+      const result=await callClaudeVision(b64, file.type, billType, key);
+      bill.parsed=result;
+      bill.status='pending';
+    }catch(err){
+      bill.status='error';
+      bill.errorMsg=err.message;
+    }
+    saveBills(BILLS);renderBillList();
+  }
+}
+
+async function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    // PDF：只能當 image/jpeg 傳（先 canvas 渲染），簡化處理：直接傳 base64
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const result=e.target.result; // data:image/...;base64,...
+      resolve(result); // 保留完整 data URI
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function callClaudeVision(dataUri, mimeType, billType, apiKey){
+  // 從 data URI 拆出 base64 部分和 mediaType
+  const match=dataUri.match(/^data:([^;]+);base64,(.+)$/);
+  if(!match)throw new Error('無法解析圖片格式');
+  const mediaType=match[1];
+  const base64Data=match[2];
+
+  // PDF 用 document type，圖片用 image type
+  const isPdf=mediaType==='application/pdf';
+
+  const typeHint=billType==='auto'?'請自動判斷是電費單還是水費單':billType==='electricity'?'這是電費單':'這是水費單';
+
+  const prompt=`請分析這份台灣公用事業帳單（${typeHint}），提取以下資訊並只回傳 JSON，不要任何說明文字：
+
+{
+  "billType": "electricity" 或 "water",
+  "site": "場域名稱（如汐止、南港，從地址判斷）",
+  "meter": "電號或水號",
+  "startDate": "YYYY-MM-DD",
+  "endDate": "YYYY-MM-DD",
+  "period": "帳單期間說明",
+  "kwh": 用電度數（數字，電費單用）,
+  "usage": 用水度數（數字，水費單用）,
+  "amount": 應繳金額（數字，不含單位）,
+  "address": "用電/用水地址",
+  "note": "其他備註（如跨期說明）"
+}
+
+如果某欄位讀不到，填 null。金額只取數字不含逗號。`;
+
+  const contentBlock=isPdf
+    ?{type:'document',source:{type:'base64',media_type:mediaType,data:base64Data}}
+    :{type:'image',source:{type:'base64',media_type:mediaType,data:base64Data}};
+
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1000,
+      messages:[{role:'user',content:[contentBlock,{type:'text',text:prompt}]}]
+    })
+  });
+
+  if(!resp.ok){
+    const err=await resp.json().catch(()=>({}));
+    throw new Error(err.error?.message||`API 錯誤 ${resp.status}`);
+  }
+
+  const data=await resp.json();
+  const text=data.content?.find(c=>c.type==='text')?.text||'';
+  // 解析 JSON（去除 markdown code fence）
+  const clean=text.replace(/```json|```/g,'').trim();
+  try{return JSON.parse(clean);}
+  catch{throw new Error('AI 回傳格式異常：'+text.slice(0,200));}
+}
+
+// ── 確認匯入單筆 ──
+function commitBill(id){
+  const b=BILLS.find(x=>x.id===id);
+  if(!b||!b.parsed)return;
+  writeToRec(b);
+  b.status='committed';
+  b.committedAt=new Date().toLocaleString('zh-TW');
+  saveBills(BILLS);saveRec(REC);
+  toast('已匯入：'+b.fileName);
+  renderBillList();
+}
+
+// ── 全部匯入 ──
+function commitAll(){
+  const pending=BILLS.filter(b=>b.status==='pending'&&b.parsed);
+  if(!pending.length)return;
+  pending.forEach(b=>{writeToRec(b);b.status='committed';b.committedAt=new Date().toLocaleString('zh-TW');});
+  saveBills(BILLS);saveRec(REC);
+  toast(`已匯入 ${pending.length} 份帳單`);
+  renderBillList();
+}
+
+// ── 寫入 REC ──
+function writeToRec(bill){
+  const p=bill.parsed;if(!p)return;
+  const yr=String(currentYear);
+  // 從 endDate 取月份
+  let month=1;
+  if(p.endDate){const m=parseInt((p.endDate||'').slice(5,7));if(m>=1&&m<=12)month=m;}
+  else if(p.startDate){const m=parseInt((p.startDate||'').slice(5,7));if(m>=1&&m<=12)month=m;}
+  const mo=String(month);
+  if(!REC[yr])REC[yr]={};
+  if(!REC[yr][mo])REC[yr][mo]={electricity:[],refrigerant:[],fuel:[],septicTank:[]};
+
+  if(p.billType==='electricity'){
+    const kwh=parseFloat(p.kwh)||0;
+    REC[yr][mo].electricity.push({
+      id:bill.id,
+      site:p.site||'汐止',
+      meter:p.meter||'',
+      kwh,
+      amount:parseFloat(p.amount)||0,
+      startDate:p.startDate||'',
+      endDate:p.endDate||'',
+      emission:calcElec(kwh,+yr),
+      _evidence:{fileName:bill.fileName,scannedAt:bill.createdAt,address:p.address||''}
+    });
+  }
+  // 水費單：目前存入備用結構（等水費模組）
+  // 先存到 localStorage 備查
+  const waterKey='ghg_water_'+yr;
+  if(p.billType==='water'){
+    try{
+      const w=JSON.parse(localStorage.getItem(waterKey)||'[]');
+      w.push({id:bill.id,site:p.site||'汐止',meter:p.meter||'',month,usage:parseFloat(p.usage)||0,amount:parseFloat(p.amount)||0,startDate:p.startDate||'',endDate:p.endDate||'',_evidence:{fileName:bill.fileName,scannedAt:bill.createdAt}});
+      localStorage.setItem(waterKey,JSON.stringify(w));
+    }catch{}
+    // toast 提示
+    setTimeout(()=>toast('水費單已存入備用區（水費模組待開發）','info'),100);
+  }
+}
+
+// ── 刪除 ──
+function deleteBill(id){
+  BILLS=BILLS.filter(b=>b.id!==id);
+  saveBills(BILLS);renderBillList();
+  toast('已刪除','info');
+}
+
+// ── 清除已匯入 ──
+function clearCommitted(){
+  if(!confirm('確定要清除所有已匯入的佐證圖片？\n（資料不會被刪除，只清除圖片）'))return;
+  BILLS=BILLS.filter(b=>b.status!=='committed');
+  // 已匯入的只保留 metadata，清除 base64
+  BILLS.forEach(b=>{if(b.status==='committed')b.imageBase64=null;});
+  saveBills(BILLS);renderBillList();
+  toast('已清除佐證圖片');
+}
+
+// ── 測試 API ──
+async function testApiKey(){
+  const key=document.getElementById('apiKeyInput')?.value||localStorage.getItem('ghg_api_key')||'';
+  const el=document.getElementById('apiStatus');
+  if(!key){if(el)el.textContent='請先填入 API Key';return;}
+  if(el)el.textContent='測試中...';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]})});
+    const d=await r.json();
+    if(el)el.innerHTML=r.ok?'<span style="color:#276749">✅ 連線成功！可以開始掃描帳單</span>':'<span style="color:#C53030">❌ 錯誤：'+(d.error?.message||r.status)+'</span>';
+  }catch(e){if(el)el.innerHTML='<span style="color:#C53030">❌ 網路錯誤：'+esc(e.message)+'</span>';}
+}
+
+// ── 編輯帳單解析結果 ──
+function editBill(id){
+  const b=BILLS.find(x=>x.id===id);if(!b||!b.parsed)return;
+  const p=b.parsed;
+  const site=prompt('場域（汐止/南港）：',p.site||'汐止');if(site===null)return;
+  const meter=prompt('電號/水號：',p.meter||'');if(meter===null)return;
+  const kwh=prompt('用電度數（電費單）：',p.kwh||'');if(kwh===null)return;
+  const amount=prompt('金額：',p.amount||'');if(amount===null)return;
+  const startDate=prompt('起始日（YYYY-MM-DD）：',p.startDate||'');if(startDate===null)return;
+  const endDate=prompt('結束日（YYYY-MM-DD）：',p.endDate||'');if(endDate===null)return;
+  b.parsed={...p,site,meter,kwh:parseFloat(kwh)||p.kwh,amount:parseFloat(amount)||p.amount,startDate,endDate};
+  saveBills(BILLS);renderBillList();
+  toast('已更新解析結果');
+}
+
+// Init
+renderNav();
+renderMain();
+</script>
+</body>
+</html>
