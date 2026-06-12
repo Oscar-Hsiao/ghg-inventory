@@ -5,6 +5,33 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>GHG 溫室氣體盤查系統 — 公信電子</title>
 <style>
+/* ── 頂部管理列 ── */
+#adminBar{position:fixed;top:0;left:0;right:0;height:44px;background:#1a1a2e;display:flex;align-items:center;justify-content:flex-end;padding:0 20px;gap:12px;z-index:200;font-size:13px}
+#adminBar .ab-label{color:rgba(255,255,255,.5)}
+#adminBar input{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:6px;padding:4px 10px;font-size:13px;width:140px;letter-spacing:.1em}
+#adminBar input::placeholder{color:rgba(255,255,255,.3)}
+#adminBar input:focus{outline:none;border-color:#4ade80}
+.ab-btn{padding:5px 14px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer}
+.ab-login{background:#4ade80;color:#0d2d20}
+.ab-logout{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.ab-badge{background:#4ade80;color:#0d2d20;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+/* 管理列存在時主體下移 */
+body{padding-top:44px}
+#sidebar{top:44px;min-height:calc(100vh - 44px)}
+/* 登入 Modal */
+#loginModal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999}
+#loginModal.hidden{display:none}
+.lm-box{background:#fff;border-radius:14px;padding:36px 32px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.lm-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#0d2d20}
+.lm-input{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:12px;text-align:center;letter-spacing:.2em;font-family:monospace}
+.lm-input:focus{outline:2px solid #0F6E56;border-color:transparent}
+.lm-btn{width:100%;background:#0F6E56;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer}
+.lm-err{color:#C53030;font-size:12px;margin-top:10px;min-height:18px}
+.lm-cancel{background:none;border:none;color:#718096;font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline}
+/* 唯讀模式：隱藏編輯用元素 */
+body.readonly .admin-only{display:none!important}
+</style>
+<style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Microsoft JhengHei','Noto Sans TC',system-ui,sans-serif;background:#f0f4f8;color:#1a202c;display:flex;min-height:100vh}
 /* Sidebar */
@@ -84,6 +111,85 @@ select[style*="width"]{width:auto}
 </style>
 </head>
 <body>
+
+<!-- 頂部管理列 -->
+<div id="adminBar">
+  <span class="ab-label">公信電子 GHG 盤查系統</span>
+  <span id="adminBadge" class="ab-badge" style="display:none">🔐 管理者</span>
+  <button id="adminLoginBtn" class="ab-btn ab-login" onclick="openLoginModal()">🔒 管理者登入</button>
+  <button id="adminLogoutBtn" class="ab-btn ab-logout" style="display:none" onclick="doLogout()">登出</button>
+</div>
+
+<!-- 登入 Modal -->
+<div id="loginModal" class="hidden">
+  <div class="lm-box">
+    <div class="lm-title">🔐 管理者登入</div>
+    <input id="pwInput" class="lm-input" type="password" placeholder="請輸入管理密碼" maxlength="20"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lm-btn" onclick="doLogin()">登入</button>
+    <div class="lm-err" id="loginErr"></div>
+    <br><button class="lm-cancel" onclick="closeLoginModal()">取消</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const PW='ji394su3';
+  const SK='ghg_admin';
+  let isAdmin=sessionStorage.getItem(SK)==='1';
+
+  function applyAdminState(){
+    document.getElementById('adminBadge').style.display=isAdmin?'inline-block':'none';
+    document.getElementById('adminLoginBtn').style.display=isAdmin?'none':'inline-block';
+    document.getElementById('adminLogoutBtn').style.display=isAdmin?'inline-block':'none';
+    if(isAdmin){document.body.classList.remove('readonly');}
+    else{document.body.classList.add('readonly');}
+  }
+
+  function openLoginModal(){
+    document.getElementById('loginModal').classList.remove('hidden');
+    document.getElementById('loginErr').textContent='';
+    document.getElementById('pwInput').value='';
+    setTimeout(()=>document.getElementById('pwInput').focus(),80);
+  }
+  function closeLoginModal(){
+    document.getElementById('loginModal').classList.add('hidden');
+  }
+  function doLogin(){
+    const v=document.getElementById('pwInput').value;
+    if(v===PW){
+      isAdmin=true;
+      sessionStorage.setItem(SK,'1');
+      closeLoginModal();
+      applyAdminState();
+      if(window.renderMain)window.renderMain();
+    }else{
+      document.getElementById('loginErr').textContent='密碼錯誤，請再試一次';
+      document.getElementById('pwInput').value='';
+      document.getElementById('pwInput').focus();
+    }
+  }
+  function doLogout(){
+    isAdmin=false;
+    sessionStorage.removeItem(SK);
+    applyAdminState();
+    if(window.renderMain)window.renderMain();
+  }
+
+  window.doLogin=doLogin;
+  window.doLogout=doLogout;
+  window.openLoginModal=openLoginModal;
+  window.closeLoginModal=closeLoginModal;
+  window.isAdmin=()=>isAdmin;
+
+  // 點 Modal 背景關閉
+  document.getElementById('loginModal').addEventListener('click',function(e){
+    if(e.target===this)closeLoginModal();
+  });
+
+  applyAdminState();
+})();
+</script>
 
 <div id="toast"></div>
 
@@ -292,10 +398,15 @@ const NAVS=[
   {id:'scan',icon:'🔍',label:'帳單掃描'},
 ];
 
+const ADMIN_TABS=new Set(['entry-elec','entry-cat1','coefficients','import','scan']);
 function renderNav(){
-  document.getElementById('nav').innerHTML=NAVS.map(n=>
-    `<button class="sb-btn${currentTab===n.id?' active':''}" onclick="goto('${n.id}')">${n.icon} ${n.label}</button>`
-  ).join('');
+  const admin=window.isAdmin&&window.isAdmin();
+  document.getElementById('nav').innerHTML=NAVS
+    .filter(n=>!ADMIN_TABS.has(n.id)||admin)
+    .map(n=>`<button class="sb-btn${currentTab===n.id?' active':''}" onclick="goto('${n.id}')">${n.icon} ${n.label}</button>`)
+    .join('');
+  // 若目前在管理頁但已登出，跳回儀表板
+  if(!admin&&ADMIN_TABS.has(currentTab)){currentTab='dashboard';renderMain();}
 }
 
 function goto(tab){currentTab=tab;renderNav();renderMain();}
@@ -590,7 +701,7 @@ function renderCoeffSub(){
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div class="section-title" style="margin:0">年度電力排放係數（kgCO₂e/度）</div>
-          <button class="btn btn-primary" onclick="recomputeAll()">🔄 重算全年排放量</button>
+          <button class="btn btn-primary admin-only" onclick="recomputeAll()">🔄 重算全年排放量</button>
         </div>
         <table style="margin-bottom:16px">
           <thead><tr><th>年度</th><th>排放係數</th><th>備註</th><th></th></tr></thead>
@@ -690,7 +801,7 @@ function pageReport(){
   document.getElementById('main').innerHTML=`
     <div class="page-header">
       <div><div class="page-title">報表輸出</div><div class="page-sub">ISO 14064-1 溫室氣體排放盤查彙整</div></div>
-      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}<button class="btn btn-primary" onclick="exportCSV()">⬇ 匯出 CSV</button></div>
+      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${window.isAdmin&&window.isAdmin()?'<button class="btn btn-primary" onclick="exportCSV()">⬇ 匯出 CSV</button>':''}</div>
     </div>
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -1093,6 +1204,10 @@ function renderMain(){
   else if(currentTab==='import')pageImport();
   else if(currentTab==='scan')pageScan();
 }
+
+// 在儀表板報表頁隱藏 CSV 匯出（給管理員才能下載）
+// 已透過 readonly CSS 控制 admin-only 元素
+
 
 
 // ═══════════════════════════════════════════════
