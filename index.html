@@ -180,7 +180,7 @@ select[style*="width"]{width:auto}
   window.doLogout=doLogout;
   window.openLoginModal=openLoginModal;
   window.closeLoginModal=closeLoginModal;
-  window.isAdmin=()=>isAdmin;
+  window.isAdmin=function(){return isAdmin;};
 
   // 點 Modal 背景關閉
   document.getElementById('loginModal').addEventListener('click',function(e){
@@ -205,6 +205,15 @@ select[style*="width"]{width:auto}
 <main id="main"></main>
 
 <script>
+// Global error handler - display errors on screen
+window.onerror = function(msg, src, line, col, err) {
+  var div = document.createElement('div');
+  div.style.cssText = 'position:fixed;top:50px;left:220px;right:0;background:#FFF5F5;border:2px solid #FC8181;padding:16px;z-index:8888;font-family:monospace;font-size:13px;color:#C53030';
+  div.innerHTML = '<strong>JS Error:</strong> ' + msg + '<br>Line: ' + line + ' Col: ' + col + '<br>' + (err ? err.stack : '');
+  document.body.appendChild(div);
+  return false;
+};
+
 // ═══════════════════════════════════════════════
 // 資料 & 計算
 // ═══════════════════════════════════════════════
@@ -227,12 +236,66 @@ const DEFAULT_COEFF={
   septicTank:{bo:0.6,mcf:0.5,gwp_ch4:27.9,bod_per_person_day:0.000015,daily_hours:8}
 };
 
-const DEMO={records:{"2025": {"1": {"electricity": [{"id": "xl_e_1", "site": "汐止", "meter": "2935001313", "kwh": 1073.0, "amount": 2678.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_2", "site": "汐止", "meter": "2935001313", "kwh": 232.4833, "amount": 580.23, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_9", "site": "汐止", "meter": "2935001313", "kwh": 1329.0, "amount": 3579.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_10", "site": "汐止", "meter": "2935001324", "kwh": 2183.0, "amount": 6485.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_11", "site": "汐止", "meter": "2935001324", "kwh": 472.9833, "amount": 1405.08, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_18", "site": "汐止", "meter": "2935001324", "kwh": 2085.0, "amount": 6272.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_19", "site": "汐止", "meter": "2935001335", "kwh": 1768.0, "amount": 4987.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_20", "site": "汐止", "meter": "2935001335", "kwh": 383.0667, "amount": 1080.52, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_27", "site": "汐止", "meter": "2935001335", "kwh": 2051.0, "amount": 6149.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_28", "site": "汐止", "meter": "2935001357", "kwh": 208.0, "amount": 453.0, "startDate": "2024-11-14", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_29", "site": "汐止", "meter": "2935001357", "kwh": 44.3279, "amount": 96.54, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_36", "site": "汐止", "meter": "2935001357", "kwh": 200.0, "amount": 456.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_37", "site": "汐止", "meter": "2935001357", "kwh": 7080.0, "amount": 35348.0, "startDate": "2024-12-16", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_38", "site": "汐止", "meter": "2935001357", "kwh": 3173.7931, "amount": 15845.66, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_51", "site": "汐止", "meter": "2935001357", "kwh": 7720.0, "amount": 37788.0, "startDate": "2025-12-15", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_52", "site": "汐止", "meter": "2935001368", "kwh": 1865.0, "amount": 5337.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_53", "site": "汐止", "meter": "2935001368", "kwh": 404.0833, "amount": 1156.35, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_60", "site": "汐止", "meter": "2935001368", "kwh": 1760.0, "amount": 5098.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_61", "site": "汐止", "meter": "2935001379", "kwh": 1447.0, "amount": 3828.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_62", "site": "汐止", "meter": "2935001379", "kwh": 313.5167, "amount": 829.4, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_69", "site": "汐止", "meter": "2935001379", "kwh": 1177.0, "amount": 3108.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_70", "site": "汐止", "meter": "2935001380", "kwh": 6989.0, "amount": 31881.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_71", "site": "汐止", "meter": "2935001380", "kwh": 1514.2833, "amount": 6907.55, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_78", "site": "汐止", "meter": "2935001380", "kwh": 7585.0, "amount": 35495.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_79", "site": "汐止", "meter": "2935001380", "kwh": 2577.0, "amount": 7908.0, "startDate": "2024-11-15", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_80", "site": "汐止", "meter": "2935001380", "kwh": 558.35, "amount": 1713.4, "startDate": "2025-01-01", "endDate": "2025-01-13", "emission": null}, {"id": "xl_e_87", "site": "汐止", "meter": "2935001380", "kwh": 2420.0, "amount": 7481.0, "startDate": "2025-11-14", "endDate": "2026-01-13", "emission": null}, {"id": "xl_e_97", "site": "南港", "meter": "2935001357", "kwh": 8880.0, "amount": 49204.0, "startDate": "2024-12-26", "endDate": "2025-01-21", "emission": null}, {"id": "xl_e_98", "site": "南港", "meter": "2935001357", "kwh": 6906.6667, "amount": 38269.78, "startDate": "2025-01-01", "endDate": "2025-01-21", "emission": null}, {"id": "xl_e_111", "site": "南港", "meter": "2935001357", "kwh": 8920.0, "amount": 49357.0, "startDate": "2025-12-24", "endDate": "2026-01-22", "emission": null}], "refrigerant": [{"id": "xl_r_1", "site": "汐止", "device": "GR-S120PT", "substance": "HFC-134a", "kg": 0.099, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_2", "site": "汐止", "device": "GN-V292S", "substance": "R-134a", "kg": 0.12, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_3", "site": "汐止", "device": "R1061LA", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_4", "site": "汐止", "device": "UW-999", "substance": "R-134a", "kg": 0.146, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_5", "site": "汐止", "device": "SR-C238BV", "substance": "R-600a", "kg": 0.039, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_6", "site": "汐止", "device": "F-Y12ES", "substance": "R-134a", "kg": 0.12, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_7", "site": "汐止", "device": "F-Y12EN", "substance": "R-134a", "kg": 0.16, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_8", "site": "汐止", "device": "F-Y12EM", "substance": "R-134a", "kg": 0.135, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_9", "site": "南港", "device": "GR-A25TS", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_10", "site": "南港", "device": "GR-A25TS", "substance": "R-600a", "kg": 0.02, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_11", "site": "南港", "device": "SR-105A", "substance": "HFC-134A", "kg": 0.05, "gwp": null, "leakRate": 0.003, "emission": null}, {"id": "xl_r_12", "site": "南港", "device": "RD-240HS", "substance": "R-134a", "kg": 0.22, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_13", "site": "南港", "device": "WDEE50Q", "substance": "R-410A", "kg": 0.27, "gwp": 2256.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_14", "site": "南港", "device": "WDEE20AW", "substance": "R-410A", "kg": 0.155, "gwp": 2256.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_15", "site": "南港", "device": "RCU-601WS", "substance": "R22", "kg": 24.0, "gwp": 1960.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_16", "site": "南港", "device": "RAC-50JK", "substance": "R-134a", "kg": 1.48, "gwp": 1960.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_17", "site": "南港", "device": "RAC-50JK", "substance": "R-134a", "kg": 1.48, "gwp": 770.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_18", "site": "南港", "device": "UR11000A", "substance": "R-134a", "kg": 0.146, "gwp": 1430.0, "leakRate": 0.003, "emission": null}, {"id": "xl_r_19", "site": "南港", "device": "DELICA", "substance": "R-134a", "kg": 0.725, "gwp": 1430.0, "leakRate": 0.15, "emission": null}, {"id": "xl_r_20", "site": "南港", "device": "AD-010", "substance": "R-134a", "kg": 0.24, "gwp": 1430.0, "leakRate": 0.15, "emission": null}], "fuel": [], "septicTank": [{"id": "xl_s_1", "site": "汐止", "male": 116, "female": 72, "workDays": 17, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_2", "site": "南港", "male": 116, "female": 72, "workDays": 17, "hoursPerDay": 8, "emission": null}]}, "2": {"electricity": [{"id": "xl_e_39", "site": "汐止", "meter": "2935001357", "kwh": 5880.0, "amount": 30868.0, "startDate": "2025-01-14", "endDate": "2025-02-12", "emission": null}, {"id": "xl_e_88", "site": "南港", "meter": "16277550614", "kwh": 2920.0, "amount": 9237.0, "startDate": "2024-12-26", "endDate": "2025-02-23", "emission": null}, {"id": "xl_e_89", "site": "南港", "meter": "2935001313", "kwh": 2628.0, "amount": 8313.3, "startDate": "2025-01-01", "endDate": "2025-02-23", "emission": null}, {"id": "xl_e_96", "site": "南港", "meter": "2935001313", "kwh": 3960.0, "amount": 14828.0, "startDate": "2025-12-24", "endDate": "2026-02-23", "emission": null}, {"id": "xl_e_99", "site": "南港", "meter": "2935001357", "kwh": 9120.0, "amount": 50119.0, "startDate": "2025-01-22", "endDate": "2025-02-23", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_3", "site": "汐止", "male": 112, "female": 71, "workDays": 19, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_4", "site": "南港", "male": 112, "female": 71, "workDays": 19, "hoursPerDay": 8, "emission": null}]}, "3": {"electricity": [{"id": "xl_e_3", "site": "汐止", "meter": "2935001313", "kwh": 1003.0, "amount": 2468.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_12", "site": "汐止", "meter": "2935001324", "kwh": 2027.0, "amount": 5922.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_21", "site": "汐止", "meter": "2935001335", "kwh": 1615.0, "amount": 4435.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_30", "site": "汐止", "meter": "2935001357", "kwh": 214.0, "amount": 467.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_40", "site": "汐止", "meter": "2935001357", "kwh": 7480.0, "amount": 36873.0, "startDate": "2025-02-13", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_54", "site": "汐止", "meter": "2935001368", "kwh": 1736.0, "amount": 4872.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_63", "site": "汐止", "meter": "2935001379", "kwh": 1263.0, "amount": 3248.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_72", "site": "汐止", "meter": "2935001380", "kwh": 6261.0, "amount": 27636.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_81", "site": "汐止", "meter": "2935001380", "kwh": 2139.0, "amount": 6327.0, "startDate": "2025-01-14", "endDate": "2025-03-13", "emission": null}, {"id": "xl_e_100", "site": "南港", "meter": "2935001357", "kwh": 12920.0, "amount": 64605.0, "startDate": "2025-02-24", "endDate": "2025-03-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_5", "site": "汐止", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_6", "site": "南港", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "4": {"electricity": [{"id": "xl_e_41", "site": "汐止", "meter": "2935001357", "kwh": 8240.0, "amount": 39770.0, "startDate": "2025-03-14", "endDate": "2025-04-14", "emission": null}, {"id": "xl_e_90", "site": "南港", "meter": "2935001313", "kwh": 3080.0, "amount": 9964.0, "startDate": "2025-02-24", "endDate": "2025-04-24", "emission": null}, {"id": "xl_e_101", "site": "南港", "meter": "2935001357", "kwh": 13000.0, "amount": 64398.0, "startDate": "2025-03-26", "endDate": "2025-04-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_7", "site": "汐止", "male": 110, "female": 72, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_8", "site": "南港", "male": 110, "female": 72, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "5": {"electricity": [{"id": "xl_e_4", "site": "汐止", "meter": "2935001313", "kwh": 1132.0, "amount": 2855.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_13", "site": "汐止", "meter": "2935001324", "kwh": 2228.0, "amount": 6648.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_22", "site": "汐止", "meter": "2935001335", "kwh": 1859.0, "amount": 5316.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_31", "site": "汐止", "meter": "2935001357", "kwh": 204.0, "amount": 445.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_42", "site": "汐止", "meter": "2935001357", "kwh": 8440.0, "amount": 40532.0, "startDate": "2025-04-15", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_55", "site": "汐止", "meter": "2935001368", "kwh": 1783.0, "amount": 5041.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_64", "site": "汐止", "meter": "2935001379", "kwh": 1308.0, "amount": 3383.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_73", "site": "汐止", "meter": "2935001380", "kwh": 7513.0, "amount": 34936.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_82", "site": "汐止", "meter": "2935001380", "kwh": 2512.0, "amount": 7673.0, "startDate": "2025-03-14", "endDate": "2025-05-13", "emission": null}, {"id": "xl_e_102", "site": "南港", "meter": "2935001357", "kwh": 10880.0, "amount": 56828.0, "startDate": "2025-04-25", "endDate": "2025-05-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_9", "site": "汐止", "male": 109, "female": 71, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_10", "site": "南港", "male": 109, "female": 71, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "6": {"electricity": [{"id": "xl_e_43", "site": "汐止", "meter": "2935001357", "kwh": 8080.0, "amount": 41010.0, "startDate": "2025-05-14", "endDate": "2025-06-11", "emission": null}, {"id": "xl_e_91", "site": "南港", "meter": "2935001313", "kwh": 5280.0, "amount": 24158.0, "startDate": "2025-04-25", "endDate": "2025-06-24", "emission": null}, {"id": "xl_e_103", "site": "南港", "meter": "2935001357", "kwh": 15320.0, "amount": 85452.0, "startDate": "2025-05-26", "endDate": "2025-06-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_11", "site": "汐止", "male": 110, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_12", "site": "南港", "male": 110, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "7": {"electricity": [{"id": "xl_e_5", "site": "汐止", "meter": "2935001313", "kwh": 1397.0, "amount": 4193.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_14", "site": "汐止", "meter": "2935001324", "kwh": 2281.0, "amount": 7911.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_23", "site": "汐止", "meter": "2935001335", "kwh": 2135.0, "amount": 7297.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_32", "site": "汐止", "meter": "2935001357", "kwh": 204.0, "amount": 507.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_44", "site": "汐止", "meter": "2935001357", "kwh": 8800.0, "amount": 46813.0, "startDate": "2025-06-12", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_56", "site": "汐止", "meter": "2935001368", "kwh": 1977.0, "amount": 6632.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_65", "site": "汐止", "meter": "2935001379", "kwh": 1345.0, "amount": 4013.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_74", "site": "汐止", "meter": "2935001380", "kwh": 9703.0, "amount": 56597.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_83", "site": "汐止", "meter": "2935001380", "kwh": 2609.0, "amount": 9292.0, "startDate": "2025-05-14", "endDate": "2025-07-13", "emission": null}, {"id": "xl_e_104", "site": "南港", "meter": "2935001357", "kwh": 16720.0, "amount": 95928.0, "startDate": "2025-06-25", "endDate": "2025-07-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_13", "site": "汐止", "male": 109, "female": 71, "workDays": 23, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_14", "site": "南港", "male": 109, "female": 71, "workDays": 23, "hoursPerDay": 8, "emission": null}]}, "8": {"electricity": [{"id": "xl_e_45", "site": "汐止", "meter": "2935001357", "kwh": 8000.0, "amount": 43551.0, "startDate": "2025-07-14", "endDate": "2025-08-13", "emission": null}, {"id": "xl_e_92", "site": "南港", "meter": "2935001313", "kwh": 7880.0, "amount": 46298.0, "startDate": "2025-06-25", "endDate": "2025-08-25", "emission": null}, {"id": "xl_e_105", "site": "南港", "meter": "2935001357", "kwh": 18240.0, "amount": 100620.0, "startDate": "2025-07-25", "endDate": "2025-08-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_15", "site": "汐止", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_16", "site": "南港", "male": 110, "female": 71, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "9": {"electricity": [{"id": "xl_e_6", "site": "汐止", "meter": "2935001313", "kwh": 1506.0, "amount": 4904.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_15", "site": "汐止", "meter": "2935001324", "kwh": 2391.0, "amount": 8851.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_24", "site": "汐止", "meter": "2935001335", "kwh": 2295.0, "amount": 8423.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_33", "site": "汐止", "meter": "2935001357", "kwh": 226.0, "amount": 590.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_46", "site": "汐止", "meter": "2935001357", "kwh": 7840.0, "amount": 42908.0, "startDate": "2025-08-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_57", "site": "汐止", "meter": "2935001368", "kwh": 1932.0, "amount": 6804.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_66", "site": "汐止", "meter": "2935001379", "kwh": 1321.0, "amount": 4142.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_75", "site": "汐止", "meter": "2935001380", "kwh": 9837.0, "amount": 61316.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_84", "site": "汐止", "meter": "2935001380", "kwh": 2574.0, "amount": 9667.0, "startDate": "2025-07-14", "endDate": "2025-09-11", "emission": null}, {"id": "xl_e_106", "site": "南港", "meter": "2935001357", "kwh": 16200.0, "amount": 93130.0, "startDate": "2025-08-26", "endDate": "2025-09-24", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_17", "site": "汐止", "male": 109, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_18", "site": "南港", "male": 109, "female": 72, "workDays": 21, "hoursPerDay": 8, "emission": null}]}, "10": {"electricity": [{"id": "xl_e_47", "site": "汐止", "meter": "2935001357", "kwh": 8520.0, "amount": 43792.0, "startDate": "2025-09-12", "endDate": "2025-10-15", "emission": null}, {"id": "xl_e_93", "site": "南港", "meter": "2935001313", "kwh": 8400.0, "amount": 45760.0, "startDate": "2025-08-26", "endDate": "2025-10-27", "emission": null}, {"id": "xl_e_107", "site": "南港", "meter": "2935001357", "kwh": 15040.0, "amount": 77713.0, "startDate": "2025-09-25", "endDate": "2025-10-27", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_19", "site": "汐止", "male": 109, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_20", "site": "南港", "male": 109, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "11": {"electricity": [{"id": "xl_e_7", "site": "汐止", "meter": "2935001313", "kwh": 1577.0, "amount": 4674.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_16", "site": "汐止", "meter": "2935001324", "kwh": 2277.0, "amount": 7380.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_25", "site": "汐止", "meter": "2935001335", "kwh": 2220.0, "amount": 7160.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_34", "site": "汐止", "meter": "2935001357", "kwh": 205.0, "amount": 488.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_48", "site": "汐止", "meter": "2935001357", "kwh": 7640.0, "amount": 37521.0, "startDate": "2025-10-16", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_58", "site": "汐止", "meter": "2935001368", "kwh": 1912.0, "amount": 5969.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_67", "site": "汐止", "meter": "2935001379", "kwh": 1264.0, "amount": 3545.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_76", "site": "汐止", "meter": "2935001380", "kwh": 10102.0, "amount": 54125.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_85", "site": "汐止", "meter": "2935001380", "kwh": 2482.0, "amount": 8173.0, "startDate": "2025-09-12", "endDate": "2025-11-13", "emission": null}, {"id": "xl_e_108", "site": "南港", "meter": "2935001357", "kwh": 12400.0, "amount": 62622.0, "startDate": "2025-10-28", "endDate": "2025-11-25", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_21", "site": "汐止", "male": 107, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_22", "site": "南港", "male": 107, "female": 74, "workDays": 20, "hoursPerDay": 8, "emission": null}]}, "12": {"electricity": [{"id": "xl_e_8", "site": "汐止", "meter": "2935001313", "kwh": 1045.7705, "amount": 2816.26, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_17", "site": "汐止", "meter": "2935001324", "kwh": 1640.6557, "amount": 4935.34, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_26", "site": "汐止", "meter": "2935001335", "kwh": 1613.9016, "amount": 4838.56, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_35", "site": "汐止", "meter": "2935001357", "kwh": 157.377, "amount": 358.82, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_49", "site": "汐止", "meter": "2935001357", "kwh": 7240.0, "amount": 35995.0, "startDate": "2025-11-14", "endDate": "2025-12-14", "emission": null}, {"id": "xl_e_50", "site": "汐止", "meter": "2935001357", "kwh": 4374.6667, "amount": 21413.2, "startDate": "2025-12-15", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_59", "site": "汐止", "meter": "2935001368", "kwh": 1384.918, "amount": 4011.54, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_68", "site": "汐止", "meter": "2935001379", "kwh": 926.1639, "amount": 2445.64, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_77", "site": "汐止", "meter": "2935001380", "kwh": 5968.5246, "amount": 27930.49, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_86", "site": "汐止", "meter": "2935001380", "kwh": 1904.2623, "amount": 5886.69, "startDate": "2025-11-14", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_94", "site": "南港", "meter": "2935001313", "kwh": 4120.0, "amount": 15808.0, "startDate": "2025-10-28", "endDate": "2025-12-23", "emission": null}, {"id": "xl_e_95", "site": "南港", "meter": "2935001313", "kwh": 510.9677, "amount": 1913.29, "startDate": "2025-12-24", "endDate": "2025-12-31", "emission": null}, {"id": "xl_e_109", "site": "南港", "meter": "2935001357", "kwh": 10200.0, "amount": 54236.0, "startDate": "2025-11-26", "endDate": "2025-12-23", "emission": null}, {"id": "xl_e_110", "site": "南港", "meter": "2935001357", "kwh": 2378.6667, "amount": 13161.87, "startDate": "2025-12-24", "endDate": "2025-12-31", "emission": null}], "refrigerant": [], "fuel": [], "septicTank": [{"id": "xl_s_23", "site": "汐止", "male": 106, "female": 75, "workDays": 22, "hoursPerDay": 8, "emission": null}, {"id": "xl_s_24", "site": "南港", "male": 106, "female": 75, "workDays": 22, "hoursPerDay": 8, "emission": null}]}}}};
+const ANNUAL_SUMMARY = {
+  "2025": {
+    "TW": {
+      "site": "台灣（汐止+南港）",
+      "cat1": {
+        "total": 191.3026,
+        "breakdown": [
+          {"name": "公務車（汽油）", "emission": 51.7784, "type": "移動源"},
+          {"name": "冷媒逸散（R-134a、R-410a 等）", "emission": 139.5242, "type": "逸散源"}
+        ]
+      },
+      "cat2": { "total": 699.8854, "kwh": 404066.4 },
+      "cat3": {
+        "total": 170.1401,
+        "breakdown": [
+          {"name": "員工通勤（汽車）", "emission": 107.47},
+          {"name": "員工通勤（機車）", "emission": 29.04},
+          {"name": "員工通勤（捷運/火車/公車）", "emission": 33.63}
+        ]
+      },
+      "cat4": {
+        "total": 576.58,
+        "breakdown": [
+          {"name": "廢棄物處理與運輸", "emission": 7.4681},
+          {"name": "燃料和能源相關活動（前段排放）", "emission": 569.1119}
+        ]
+      }
+    },
+    "XM": {
+      "site": "廈門（丞信電子科技）",
+      "cat1": {
+        "total": 31.0342,
+        "breakdown": [
+          {"name": "公務車（汽油）", "emission": 1.4088, "type": "移動源"},
+          {"name": "冷媒逸散（R-134a、R-32、R-23、R-404a）", "emission": 29.6254, "type": "逸散源"}
+        ]
+      },
+      "cat2": { "total": 511.1864, "kwh": 963412 },
+      "cat3": {
+        "total": 335.6548,
+        "breakdown": [
+          {"name": "員工通勤（各交通工具）", "emission": 335.6548}
+        ]
+      },
+      "cat4": {
+        "total": 3424.4667,
+        "breakdown": [
+          {"name": "廢棄物處理與運輸", "emission": 26.9200},
+          {"name": "燃料和能源相關活動（前段排放）", "emission": 3397.5468}
+        ]
+      }
+    }
+  }
+};
 
-function loadRec(){try{const s=localStorage.getItem(REC_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEMO.records));}catch{return JSON.parse(JSON.stringify(DEMO.records));}}
-function loadCoeff(){try{const s=localStorage.getItem(COEFF_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_COEFF));}catch{return JSON.parse(JSON.stringify(DEFAULT_COEFF));}}
-function saveRec(r){try{localStorage.setItem(REC_KEY,JSON.stringify(r));}catch{}}
-function saveCoeff(c){try{localStorage.setItem(COEFF_KEY,JSON.stringify(c));}catch{}}
+const DEMO={records:{"2025":{"1":{"electricity":[{"id":"xl_e_1","site":"汐止","meter":"2935001313","kwh":1073.0,"amount":2678.0,"startDate":"2024-11-15","endDate":"2025-01-13","emission":null}],"refrigerant":[],"fuel":[],"septicTank":[]}}}};
+function loadRec(){try{const s=localStorage.getItem(REC_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEMO.records));}catch(e){return JSON.parse(JSON.stringify(DEMO.records));}}
+function loadCoeff(){try{const s=localStorage.getItem(COEFF_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_COEFF));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_COEFF));}}
+function saveRec(r){try{localStorage.setItem(REC_KEY,JSON.stringify(r));}catch(e){}}
+function saveCoeff(c){try{localStorage.setItem(COEFF_KEY,JSON.stringify(c));}catch(e){}}
 
 let REC=loadRec(), COEFF=loadCoeff();
 let currentTab='dashboard', currentYear=2025, currentMonth=1, currentSite='all';
@@ -256,7 +319,8 @@ function recalcYear(year){
 }
 recalcYear(currentYear);
 
-function getSummary(year,site='all'){
+function getSummary(year,site){
+  if(site===undefined)site='all';
   const yr=String(year);
   const empty=Array.from({length:12},(_,i)=>({month:i+1,cat1:0,cat2:0,refrigerant:0,fuel:0,septic:0}));
   if(!REC[yr])return{months:empty,total:{cat1:0,cat2:0}};
@@ -281,7 +345,7 @@ function getBreakdown(year){
     let cat1=0,cat2=0;
     Object.values(REC[yr]).forEach(md=>{
       cat2+=(md.electricity||[]).filter(r=>r.site===site).reduce((s,r)=>s+(r.emission||0),0);
-      cat1+=[...(md.refrigerant||[]),...(md.fuel||[]),...(md.septicTank||[])].filter(r=>r.site===site).reduce((s,r)=>s+(r.emission||0),0);
+      var _c1arr=(md.refrigerant||[]).concat(md.fuel||[]).concat(md.septicTank||[]).filter(function(r){return r.site===site;}); cat1+=_c1arr.reduce(function(s,r){return s+(r.emission||0);},0);
     });
     return{site,cat1:+cat1.toFixed(4),cat2:+cat2.toFixed(4),total:+(cat1+cat2).toFixed(4)};
   });
@@ -291,7 +355,8 @@ function getBreakdown(year){
 // Toast
 // ═══════════════════════════════════════════════
 let toastTimer;
-function toast(msg,type='success'){
+function toast(msg,type){
+  if(type===undefined)type='success';
   const el=document.getElementById('toast');
   el.textContent=msg;
   el.style.background=type==='success'?'#276749':'#C53030';
@@ -304,8 +369,9 @@ function toast(msg,type='success'){
 // HTML helpers
 // ═══════════════════════════════════════════════
 function badge(text,color){return`<span class="badge" style="background:${color}18;color:${color};border:1px solid ${color}30">${esc(text)}</span>`;}
-function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function fmt(n,d=4){return Number.isFinite(n)?n.toFixed(d):'-';}
+function esc(s){return String(( s !== null && s !== undefined ? s : '' )).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n,d){
+  if(d===undefined)d=4;return Number.isFinite(n)?n.toFixed(d):'-';}
 function numFmt(n){return Number.isFinite(n)?n.toLocaleString():'-';}
 
 // ═══════════════════════════════════════════════
@@ -319,7 +385,7 @@ function drawBarChart(canvasId,data){
   const chartW=W-pad.left-pad.right,chartH=H-pad.top-pad.bottom;
   ctx.clearRect(0,0,W,H);
 
-  const maxVal=Math.max(...data.map(d=>d.cat1+d.cat2),0.001);
+  var _vals=data.map(function(d){return d.cat1+d.cat2;}); _vals.push(0.001); var maxVal=Math.max.apply(null,_vals);
   const barW=chartW/data.length;
 
   // Grid
@@ -400,13 +466,19 @@ const NAVS=[
 
 const ADMIN_TABS=new Set(['entry-elec','entry-cat1','coefficients','import','scan']);
 function renderNav(){
-  const admin=window.isAdmin&&window.isAdmin();
-  document.getElementById('nav').innerHTML=NAVS
-    .filter(n=>!ADMIN_TABS.has(n.id)||admin)
-    .map(n=>`<button class="sb-btn${currentTab===n.id?' active':''}" onclick="goto('${n.id}')">${n.icon} ${n.label}</button>`)
-    .join('');
-  // 若目前在管理頁但已登出，跳回儀表板
-  if(!admin&&ADMIN_TABS.has(currentTab)){currentTab='dashboard';renderMain();}
+  var admin=window.isAdmin&&window.isAdmin();
+  var el=document.getElementById('nav');
+  el.innerHTML='';
+  for(var ni=0;ni<NAVS.length;ni++){
+    var n=NAVS[ni];
+    if(ADMIN_TABS.has(n.id)&&!admin)continue;
+    var btn=document.createElement('button');
+    btn.className='sb-btn'+(currentTab===n.id?' active':'');
+    btn.textContent=n.icon+' '+n.label;
+    (function(tabId){btn.onclick=function(){goto(tabId);};})(n.id);
+    el.appendChild(btn);
+  }
+  if(!admin&&ADMIN_TABS.has(currentTab)){currentTab='dashboard';}
 }
 
 function goto(tab){currentTab=tab;renderNav();renderMain();}
@@ -432,72 +504,188 @@ function metricCard(label,value,unit,color){
 // ═══════════════════════════════════════════════
 
 // ── Dashboard ──
-function pageDashboard(){
-  recalcYear(currentYear);
-  const sum=getSummary(currentYear,currentSite);
-  const bd=getBreakdown(currentYear);
-  const total=+(sum.total.cat1+sum.total.cat2).toFixed(4);
-  const filledMonths=Object.keys(REC[String(currentYear)]||{}).length;
-  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-
-  const pieData=[
-    {name:'外購電力',value:+sum.total.cat2.toFixed(4),color:'#185FA5'},
-    {name:'冷媒逸散',value:+sum.months.reduce((s,m)=>s+(m.refrigerant||0),0).toFixed(4),color:'#854F0B'},
-    {name:'移動源',value:+sum.months.reduce((s,m)=>s+(m.fuel||0),0).toFixed(4),color:'#993556'},
-    {name:'化糞池',value:+sum.months.reduce((s,m)=>s+(m.septic||0),0).toFixed(4),color:'#533AB7'},
-  ].filter(d=>d.value>0);
-
-  const breakdownRows=bd.map(r=>`
-    <tr>
-      <td style="font-weight:600">${r.site}</td>
-      <td style="color:#0F6E56">${r.cat1.toFixed(4)}</td>
-      <td style="color:#185FA5">${r.cat2.toFixed(4)}</td>
-      <td style="font-weight:600">${r.total.toFixed(4)}</td>
-      <td>${total>0?`<div style="display:flex;align-items:center;gap:8px"><div class="prog-bar"><div class="prog-fill" style="width:${(r.total/total*100).toFixed(1)}%"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56;min-width:36px">${(r.total/total*100).toFixed(1)}%</span></div>`:'-'}</td>
-    </tr>`).join('');
-
-  document.getElementById('main').innerHTML=`
-    <div class="page-header">
-      <div><div class="page-title">溫室氣體排放總覽</div><div class="page-sub">依 ISO 14064-1 盤查邊界彙整</div></div>
-      <div class="header-controls">
-        ${yearSel(currentYear,"setYear(this.value)")}
-        ${siteSel(currentSite,"setSite(this.value)")}
-      </div>
-    </div>
-    <div class="metric-grid">
-      ${metricCard('年度總排放',total.toFixed(3),'公噸 CO₂e','#0F6E56')}
-      ${metricCard('類別一 直接排放',sum.total.cat1.toFixed(3),'公噸 CO₂e','#0F6E56')}
-      ${metricCard('類別二 外購電力',sum.total.cat2.toFixed(3),'公噸 CO₂e','#185FA5')}
-      ${metricCard('已填報月份',filledMonths,'/ 12 個月','#854F0B')}
-    </div>
-    <div class="two-col">
-      <div class="card">
-        <div class="section-title">月排放量趨勢（公噸 CO₂e）</div>
-        <canvas id="barChart" width="600" height="220"></canvas>
-      </div>
-      <div class="card">
-        <div class="section-title">排放來源占比</div>
-        <canvas id="pieChart" width="280" height="220"></canvas>
-      </div>
-    </div>
-    <div class="card">
-      <div class="section-title">場域排放比較</div>
-      <table>
-        <thead><tr><th>場域</th><th>類別一 (公噸CO₂e)</th><th>類別二 (公噸CO₂e)</th><th>合計 (公噸CO₂e)</th><th>佔比</th></tr></thead>
-        <tbody>${breakdownRows}</tbody>
-      </table>
-    </div>`;
-
-  const chartData=sum.months.map((m,i)=>({name:MONTHS[i],cat1:+(m.cat1||0).toFixed(4),cat2:+(m.cat2||0).toFixed(4)}));
-  drawBarChart('barChart',chartData);
-  drawPieChart('pieChart',pieData);
+function getSiteData(siteKey, year){
+  if(year===undefined)year=currentYear;
+  var S=ANNUAL_SUMMARY[String(year||currentYear)];
+  if(!S)return{site:'無資料',cat1:0,cat2:0,cat3:0,cat4:0};
+  if(siteKey==='ALL'){
+    var tw=S['TW'],xm=S['XM'];
+    return{site:'全公司',cat1:+(tw.cat1.total+xm.cat1.total).toFixed(4),cat2:+(tw.cat2.total+xm.cat2.total).toFixed(4),cat3:+(tw.cat3.total+xm.cat3.total).toFixed(4),cat4:+(tw.cat4.total+xm.cat4.total).toFixed(4)};
+  }
+  var d=S[siteKey];
+  return{site:d.site,cat1:+d.cat1.total.toFixed(4),cat2:+d.cat2.total.toFixed(4),cat3:+d.cat3.total.toFixed(4),cat4:+d.cat4.total.toFixed(4)};
 }
+
+function pageDashboard(){
+  var year=currentYear;
+  var S=ANNUAL_SUMMARY[String(year)];
+  if(!S){
+    document.getElementById('main').innerHTML='<div class="card"><div class="empty">尚無 '+year+' 年盤查資料</div></div>';
+    return;
+  }
+
+  var activeKey=window._dashSite||'ALL';
+  var d=getSiteData(activeKey,year);
+  var total=+(d.cat1+d.cat2+d.cat3+d.cat4).toFixed(4);
+  var twD=getSiteData('TW',year),xmD=getSiteData('XM',year),allD=getSiteData('ALL',year);
+  var allTotal=+(allD.cat1+allD.cat2+allD.cat3+allD.cat4).toFixed(2);
+
+  var siteTabData=[['ALL','全公司'],['TW','台灣廠'],['XM','廈門廠']];
+  var siteBtnEl=document.createElement('div');
+  siteBtnEl.style.cssText='display:flex;gap:0;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden';
+  siteTabData.forEach(function(t){
+    var btn=document.createElement('button');
+    btn.textContent=t[1];
+    btn.style.cssText='padding:6px 14px;border:none;font-size:13px;cursor:pointer;background:'+(activeKey===t[0]?'#0F6E56':'#fff')+';color:'+(activeKey===t[0]?'#fff':'#718096')+';font-family:inherit';
+    (function(k){btn.onclick=function(){window._dashSite=k;pageDashboard();};})(t[0]);
+    siteBtnEl.appendChild(btn);
+  });
+  var siteBtns='__SITE_BTN_PLACEHOLDER__';
+
+  var siteRows=[twD,xmD].map(function(r){
+    var rt=+(r.cat1+r.cat2+r.cat3+r.cat4).toFixed(2);
+    return '<tr><td style="font-weight:600">'+esc(r.site)+'</td><td style="color:#0F6E56">'+r.cat1.toFixed(2)+'</td><td style="color:#185FA5">'+r.cat2.toFixed(2)+'</td><td style="color:#854F0B">'+r.cat3.toFixed(2)+'</td><td style="color:#533AB7">'+r.cat4.toFixed(2)+'</td><td style="font-weight:700">'+rt.toFixed(2)+'</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%;height:100%;background:#0F6E56;border-radius:3px"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56;min-width:40px">'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%</span></div></td></tr>';
+  }).join('');
+
+  var cat1Breakdown=activeKey==='ALL'
+    ? S.TW.cat1.breakdown.concat(S.XM.cat1.breakdown.map(function(b){return {name:'【廈門】'+b.name,emission:b.emission,type:b.type};}))
+    : S[activeKey].cat1.breakdown;
+  var cat4Breakdown=activeKey==='ALL'
+    ? S.TW.cat4.breakdown.concat(S.XM.cat4.breakdown.map(function(b){return {name:'【廈門】'+b.name,emission:b.emission};}))
+    : S[activeKey].cat4.breakdown;
+
+  document.getElementById('main').innerHTML=
+    '<div class="page-header">'+
+      '<div><div class="page-title">'+year+' 溫室氣體排放總覽</div>'+
+        '<div class="page-sub">依 ISO 14064-1 / GHG Protocol　盤查期間：'+year+'/01/01－'+year+'/12/31</div></div>'+
+      '<div class="header-controls" id="dashHeaderCtrl">'+
+        yearSel(currentYear,'setYear(this.value)')+
+        '</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px">'+
+      metricCard('年度總排放',total.toFixed(2),'公噸 CO₂e','#0F6E56')+
+      metricCard('類別一 直接排放',d.cat1.toFixed(2),'公噸 CO₂e','#0F6E56')+
+      metricCard('類別二 外購電力',d.cat2.toFixed(2),'公噸 CO₂e','#185FA5')+
+      metricCard('類別三 員工通勤',d.cat3.toFixed(2),'公噸 CO₂e','#854F0B')+
+      metricCard('類別四 間接排放',d.cat4.toFixed(2),'公噸 CO₂e','#533AB7')+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px">'+
+      '<div class="card"><div class="section-title">各類別排放量比較（公噸 CO₂e）</div><canvas id="catBarChart" width="560" height="200"></canvas></div>'+
+      '<div class="card"><div class="section-title">排放類別占比</div><canvas id="catPieChart" width="340" height="200"></canvas></div>'+
+    '</div>'+
+    '<div class="card" style="margin-bottom:16px">'+
+      '<div class="section-title">場域排放比較（公噸 CO₂e）</div>'+
+      '<div style="overflow-x:auto"><table>'+
+        '<thead><tr><th>場域</th><th style="color:#0F6E56">類別一</th><th style="color:#185FA5">類別二</th><th style="color:#854F0B">類別三</th><th style="color:#533AB7">類別四</th><th>合計</th><th>占全公司比</th></tr></thead>'+
+        '<tbody>'+siteRows+
+          '<tr style="background:#f0fdf4;font-weight:700"><td>全公司合計</td><td style="color:#0F6E56">'+allD.cat1.toFixed(2)+'</td><td style="color:#185FA5">'+allD.cat2.toFixed(2)+'</td><td style="color:#854F0B">'+allD.cat3.toFixed(2)+'</td><td style="color:#533AB7">'+allD.cat4.toFixed(2)+'</td><td>'+allTotal+'</td><td>100%</td></tr>'+
+        '</tbody></table></div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
+      '<div class="card"><div class="section-title" style="color:#0F6E56">類別一 直接排放明細</div>'+renderBreakdownTable(cat1Breakdown,'#0F6E56')+'</div>'+
+      '<div class="card"><div class="section-title" style="color:#533AB7">類別四 間接排放明細</div>'+renderBreakdownTable(cat4Breakdown,'#533AB7')+'</div>'+
+    '</div>';
+
+  var catData=[
+    {name:'類別一\n直接排放',value:d.cat1,color:'#0F6E56'},
+    {name:'類別二\n外購電力',value:d.cat2,color:'#185FA5'},
+    {name:'類別三\n員工通勤',value:d.cat3,color:'#854F0B'},
+    {name:'類別四\n間接排放',value:d.cat4,color:'#533AB7'},
+  ];
+  drawCatBar('catBarChart',catData);
+  drawCatPie('catPieChart',catData);
+  var hCtrl=document.getElementById('dashHeaderCtrl');
+  if(hCtrl)hCtrl.appendChild(siteBtnEl);
+}
+function renderBreakdownTable(items,color){
+  if(!items||!items.length)return'<div class="empty">無資料</div>';
+  const total=items.reduce((s,r)=>s+(r.emission||0),0);
+  return`<table><thead><tr><th>排放源</th><th>排放量(公噸CO₂e)</th><th>占比</th></tr></thead>
+    <tbody>${items.map(r=>`<tr>
+      <td style="font-size:12px">${esc(r.name)}</td>
+      <td style="font-weight:600;color:${color}">${(r.emission||0).toFixed(4)}</td>
+      <td style="font-size:12px;color:#718096">${total>0?((r.emission||0)/total*100).toFixed(1)+'%':'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function roundedRect(ctx,x,y,w,h,r){
+  if(w<2*r)r=w/2;if(h<2*r)r=h/2;
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function drawCatBar(canvasId,data){
+  var canvas=document.getElementById(canvasId);if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  var pad={top:20,right:20,bottom:50,left:60};
+  var cW=W-pad.left-pad.right,cH=H-pad.top-pad.bottom;
+  var maxVal=Math.max.apply(null,data.map(function(d){return d.value;}));
+  if(maxVal<=0)maxVal=1;
+  var bw=cW/data.length;
+  for(var i=0;i<=4;i++){
+    var y=pad.top+cH*(1-i/4);
+    ctx.strokeStyle='#f0f0f0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+cW,y);ctx.stroke();
+    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText((maxVal*i/4).toFixed(0),pad.left-6,y+3);
+  }
+  data.forEach(function(d,i){
+    var h=Math.max(d.value/maxVal*cH,2);
+    var x=pad.left+i*bw+bw*0.15;
+    var bwidth=bw*0.7;
+    ctx.fillStyle=d.color;
+    roundedRect(ctx,x,pad.top+cH-h,bwidth,h,4);
+    ctx.fill();
+    ctx.fillStyle='#1a202c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.value.toFixed(1),x+bwidth/2,pad.top+cH-h-6);
+    var lines=d.name.split('\n');
+    lines.forEach(function(line,li){
+      ctx.fillStyle='#718096';ctx.font='10px sans-serif';
+      ctx.fillText(line,pad.left+i*bw+bw/2,H-pad.bottom+15+li*13);
+    });
+  });
+}
+function drawCatPie(canvasId,data){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const total=data.reduce((s,d)=>s+d.value,0);
+  if(total<=0){ctx.fillStyle='#718096';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
+  const cx=110,cy=H/2,r=Math.min(cx,cy)-15;
+  let angle=-Math.PI/2;
+  data.forEach(d=>{
+    const slice=d.value/total*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+slice);
+    ctx.closePath();ctx.fillStyle=d.color;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    angle+=slice;
+  });
+  // Legend
+  const lx=225,ly=H/2-data.length*14;
+  data.forEach((d,i)=>{
+    ctx.fillStyle=d.color;ctx.fillRect(lx,ly+i*26,12,12);
+    const label=d.name.replace('\n','');
+    ctx.fillStyle='#1a202c';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(label,lx+16,ly+i*26+10);
+    ctx.fillStyle='#718096';ctx.font='10px sans-serif';
+    ctx.fillText((d.value/total*100).toFixed(1)+'%  '+d.value.toFixed(1)+' 公噸',lx+16,ly+i*26+21);
+  });
+}
+
 
 // ── Elec Entry ──
 function pageElec(){
   recalcYear(currentYear);
   const yr=String(currentYear),mo=String(currentMonth);
-  const existing=(REC[yr]?.[mo]?.electricity)||[];
+  const existing=(( REC[yr] && REC[yr][mo] ? REC[yr][mo].electricity : null ))||[];
   const factor=getElecFactor(currentYear);
   const totalKwh=existing.reduce((s,r)=>s+r.kwh,0);
   const totalEmit=existing.reduce((s,r)=>s+(r.emission||0),0);
@@ -558,8 +746,8 @@ let cat1Sub='refrigerant';
 function pageCat1(){
   recalcYear(currentYear);
   const yr=String(currentYear),mo=String(currentMonth);
-  const md=REC[yr]?.[mo]||{};
-  const cat1Total=[...(md.refrigerant||[]),...(md.fuel||[]),...(md.septicTank||[])].reduce((s,r)=>s+(r.emission||0),0);
+  const md=( REC[yr] ? REC[yr][mo] : undefined )||{};
+  var cat1Total=(md.refrigerant||[]).concat(md.fuel||[]).concat(md.septicTank||[]).reduce(function(s,r){return s+(r.emission||0);},0);
 
   document.getElementById('main').innerHTML=`
     <div class="page-header">
@@ -582,14 +770,14 @@ function pageCat1(){
 
 function renderCat1Sub(){
   const yr=String(currentYear),mo=String(currentMonth);
-  const md=REC[yr]?.[mo]||{};
+  const md=( REC[yr] ? REC[yr][mo] : undefined )||{};
   const el=document.getElementById('cat1-content');if(!el)return;
   if(cat1Sub==='refrigerant'){
     const rows=(md.refrigerant||[]).map(r=>`
       <tr>
         <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td>
         <td style="font-size:12px">${esc(r.substance)}</td>
-        <td>${r.kg}</td><td style="color:#718096">${r.gwp??'未公告'}</td>
+        <td>${r.kg}</td><td style="color:#718096">${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td>
         <td style="color:#718096">${r.leakRate}</td>
         <td style="font-weight:600;color:#854F0B">${r.emission!=null?r.emission.toFixed(6):'N/A'}</td>
         <td><button class="btn btn-danger" onclick="delCat1('refrigerant','${r.id}')">刪除</button></td>
@@ -771,72 +959,162 @@ function renderCoeffSub(){
 
 // ── Report ──
 function pageReport(){
-  recalcYear(currentYear);
-  const sum=getSummary(currentYear);
-  const bd=getBreakdown(currentYear);
-  const total=+(sum.total.cat1+sum.total.cat2).toFixed(4);
-  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const year=currentYear;
+  const S=ANNUAL_SUMMARY[String(year)];
+  if(!S){document.getElementById('main').innerHTML=`<div class="card"><div class="empty">尚無 ${year} 年盤查資料</div></div>`;return;}
 
-  const monthRows=sum.months.map((m,i)=>{
-    const mt=m.cat1+m.cat2;
-    const hasData=REC[String(currentYear)]?.[String(i+1)];
-    return`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
-      <td style="font-weight:500">${i+1} 月</td>
-      <td style="color:${m.cat1>0?'#0F6E56':'#718096'}">${m.cat1>0?m.cat1.toFixed(6):'—'}</td>
-      <td style="color:${m.cat2>0?'#185FA5':'#718096'}">${m.cat2>0?m.cat2.toFixed(6):'—'}</td>
-      <td style="font-weight:${mt>0?600:400}">${mt>0?mt.toFixed(6):'—'}</td>
-      <td>${!hasData?'<span class="badge-pending">待填報</span>':''}</td>
+  const tw=S.TW,xm=S.XM;
+  const twTotal=+(tw.cat1.total+tw.cat2.total+tw.cat3.total+tw.cat4.total).toFixed(4);
+  const xmTotal=+(xm.cat1.total+xm.cat2.total+xm.cat3.total+xm.cat4.total).toFixed(4);
+  const grandTotal=+(twTotal+xmTotal).toFixed(4);
+
+  const catRow=(label,tw_val,xm_val,color)=>{
+    const total=+(tw_val+xm_val).toFixed(4);
+    return `<tr>
+      <td style="font-weight:600;color:${color}">${label}</td>
+      <td style="color:${color}">${tw_val.toFixed(4)}</td>
+      <td style="color:${color}">${xm_val.toFixed(4)}</td>
+      <td style="font-weight:700">${total.toFixed(4)}</td>
+      <td style="color:#718096;font-size:12px">${grandTotal>0?(total/grandTotal*100).toFixed(2)+'%':'—'}</td>
     </tr>`;
-  }).join('');
-
-  const bdRows=bd.map(r=>`
-    <tr>
-      <td style="font-weight:600">${r.site}</td>
-      <td style="color:#0F6E56">${r.cat1.toFixed(6)}</td>
-      <td style="color:#185FA5">${r.cat2.toFixed(6)}</td>
-      <td style="font-weight:600">${r.total.toFixed(6)}</td>
-      <td>${total>0?`<div style="display:flex;align-items:center;gap:8px"><div class="prog-bar"><div class="prog-fill" style="width:${(r.total/total*100).toFixed(1)}%"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56">${(r.total/total*100).toFixed(1)}%</span></div>`:'-'}</td>
-    </tr>`).join('');
+  };
 
   document.getElementById('main').innerHTML=`
     <div class="page-header">
-      <div><div class="page-title">報表輸出</div><div class="page-sub">ISO 14064-1 溫室氣體排放盤查彙整</div></div>
-      <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${window.isAdmin&&window.isAdmin()?'<button class="btn btn-primary" onclick="exportCSV()">⬇ 匯出 CSV</button>':''}</div>
+      <div><div class="page-title">報表輸出</div>
+        <div class="page-sub">ISO 14064-1 溫室氣體排放盤查彙整</div>
+      </div>
+      <div class="header-controls">
+        ${yearSel(year,"setYear(this.value)")}
+        ${window.isAdmin&&window.isAdmin()?'<button class="btn btn-primary" onclick="exportCSV()">⬇ 匯出 CSV</button>':''}
+      </div>
     </div>
+
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div style="font-weight:700;font-size:16px">公信電子股份有限公司</div>
-        <div style="font-size:13px;color:#718096">${currentYear} 年度溫室氣體排放盤查彙整表</div>
+        <div style="font-size:13px;color:#718096">${year} 年度溫室氣體排放盤查彙整表</div>
       </div>
-      <div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#718096">
-        <span>盤查邊界：汐止廠 / 南港廠</span>
-        <span>盤查期間：${currentYear}/01/01 ~ ${currentYear}/12/31</span>
+      <div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#718096;flex-wrap:wrap">
+        <span>盤查邊界：台灣（汐止+南港）、廈門廠</span>
+        <span>盤查期間：${year}/01/01 ~ ${year}/12/31</span>
         <span>盤查依據：ISO 14064-1：2018</span>
+        <span>設定方法：營運控制法</span>
       </div>
+
       <table>
-        <thead style="background:#0d2d20"><tr>
-          ${['月份','類別一 直接排放(公噸CO₂e)','類別二 外購電力(公噸CO₂e)','月合計(公噸CO₂e)','備註'].map(h=>`<th style="color:#fff;padding:9px 12px">${h}</th>`).join('')}
-        </tr></thead>
+        <thead>
+          <tr style="background:#0d2d20">
+            <th style="color:#fff;padding:9px 12px">排放類別</th>
+            <th style="color:#fff;padding:9px 12px">台灣廠 (公噸CO₂e)</th>
+            <th style="color:#fff;padding:9px 12px">廈門廠 (公噸CO₂e)</th>
+            <th style="color:#fff;padding:9px 12px">合計 (公噸CO₂e)</th>
+            <th style="color:#fff;padding:9px 12px">占比(%)</th>
+          </tr>
+        </thead>
         <tbody>
-          ${monthRows}
+          ${catRow('類別一：直接排放',tw.cat1.total,xm.cat1.total,'#0F6E56')}
+          <tr style="background:#f9f9f9">
+            <td style="font-size:12px;color:#718096;padding-left:20px">└ 移動源（公務車汽油）</td>
+            <td style="font-size:12px;color:#718096">51.7784</td>
+            <td style="font-size:12px;color:#718096">1.4088</td>
+            <td style="font-size:12px;color:#718096">53.1872</td>
+            <td></td>
+          </tr>
+          <tr style="background:#f9f9f9">
+            <td style="font-size:12px;color:#718096;padding-left:20px">└ 逸散源（冷媒）</td>
+            <td style="font-size:12px;color:#718096">139.5242</td>
+            <td style="font-size:12px;color:#718096">29.6254</td>
+            <td style="font-size:12px;color:#718096">169.1496</td>
+            <td></td>
+          </tr>
+          ${catRow('類別二：外購電力',tw.cat2.total,xm.cat2.total,'#185FA5')}
+          <tr style="background:#f9f9f9">
+            <td style="font-size:12px;color:#718096;padding-left:20px">└ 用電量（千度）</td>
+            <td style="font-size:12px;color:#718096">404,066 度</td>
+            <td style="font-size:12px;color:#718096">963,412 度</td>
+            <td style="font-size:12px;color:#718096">1,367,478 度</td>
+            <td></td>
+          </tr>
+          ${catRow('類別三：員工通勤',tw.cat3.total,xm.cat3.total,'#854F0B')}
+          ${catRow('類別四：間接排放',tw.cat4.total,xm.cat4.total,'#533AB7')}
+          <tr style="background:#f9f9f9">
+            <td style="font-size:12px;color:#718096;padding-left:20px">└ 廢棄物處理與運輸</td>
+            <td style="font-size:12px;color:#718096">7.4681</td>
+            <td style="font-size:12px;color:#718096">26.9200</td>
+            <td style="font-size:12px;color:#718096">34.3881</td>
+            <td></td>
+          </tr>
+          <tr style="background:#f9f9f9">
+            <td style="font-size:12px;color:#718096;padding-left:20px">└ 燃料和能源相關前段排放</td>
+            <td style="font-size:12px;color:#718096">569.1119</td>
+            <td style="font-size:12px;color:#718096">3,397.5468</td>
+            <td style="font-size:12px;color:#718096">3,966.6587</td>
+            <td></td>
+          </tr>
           <tr style="background:#e8f5e9;border-top:2px solid #0F6E56">
             <td style="font-weight:700;padding:10px 12px">年度合計</td>
-            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${sum.total.cat1.toFixed(6)}</td>
-            <td style="font-weight:700;color:#185FA5;padding:10px 12px">${sum.total.cat2.toFixed(6)}</td>
-            <td style="font-weight:700;padding:10px 12px">${total.toFixed(6)}</td>
-            <td></td>
+            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${twTotal.toFixed(4)}</td>
+            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${xmTotal.toFixed(4)}</td>
+            <td style="font-weight:700;padding:10px 12px">${grandTotal.toFixed(4)}</td>
+            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">100%</td>
           </tr>
         </tbody>
       </table>
     </div>
+
     <div class="card">
-      <div class="section-title">各場域排放彙整</div>
+      <div class="section-title">溫室氣體種類排放量（公噸CO₂e）</div>
       <table>
-        <thead><tr><th>場域</th><th>類別一 (公噸CO₂e)</th><th>類別二 (公噸CO₂e)</th><th>合計 (公噸CO₂e)</th><th>占全公司(%)</th></tr></thead>
-        <tbody>${bdRows}</tbody>
+        <thead><tr>
+          <th>場域</th><th>CO₂</th><th>CH₄</th><th>N₂O</th><th>HFCs</th><th>合計</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600">台灣（汐止+南港）</td>
+            <td>1,474.73</td><td>0.5023</td><td>1.5561</td><td>26.6192</td>
+            <td style="font-weight:700">${twTotal.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">廈門（丞信電子科技）</td>
+            <td>4,272.57</td><td>3.5320</td><td>0.0406</td><td>26.1981</td>
+            <td style="font-weight:700">${xmTotal.toFixed(2)}</td>
+          </tr>
+          <tr style="background:#e8f5e9;font-weight:700">
+            <td>全公司合計</td>
+            <td>5,747.30</td><td>4.0343</td><td>1.5967</td><td>52.8173</td>
+            <td>${grandTotal.toFixed(2)}</td>
+          </tr>
+        </tbody>
       </table>
-    </div>`;
+    </div>
+  `;
 }
+
+function exportCSV(){
+  const year=currentYear;
+  const S=ANNUAL_SUMMARY[String(year)];
+  if(!S){toast('無資料可匯出','error');return;}
+  const tw=S.TW,xm=S.XM;
+  const rows=[
+    ['排放類別','台灣廠(公噸CO₂e)','廈門廠(公噸CO₂e)','合計(公噸CO₂e)','占比(%)'],
+  ];
+  const grand=tw.cat1.total+tw.cat2.total+tw.cat3.total+tw.cat4.total+xm.cat1.total+xm.cat2.total+xm.cat3.total+xm.cat4.total;
+  [['類別一 直接排放','cat1'],['類別二 外購電力','cat2'],['類別三 員工通勤','cat3'],['類別四 間接排放','cat4']].forEach(([label,key])=>{
+    const t=+(tw[key].total+xm[key].total).toFixed(4);
+    rows.push([label,tw[key].total.toFixed(4),xm[key].total.toFixed(4),t.toFixed(4),(t/grand*100).toFixed(2)+'%']);
+  });
+  rows.push(['合計',
+    (tw.cat1.total+tw.cat2.total+tw.cat3.total+tw.cat4.total).toFixed(4),
+    (xm.cat1.total+xm.cat2.total+xm.cat3.total+xm.cat4.total).toFixed(4),
+    grand.toFixed(4),'100%']);
+  var csv='\uFEFF'+rows.map(function(r){return r.join(',');}).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`GHG_${year}_盤查彙整表.csv`;a.click();
+  toast('CSV 已下載');
+}
+
 
 // ── Import ──
 let importFileType=null, importYear=2025, importPreview=null;
@@ -909,7 +1187,7 @@ function renderImportStep(step){
           <table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th></tr></thead>
           <tbody>${importPreview.refrigerant.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
             <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td><td>${esc(r.substance)}</td>
-            <td>${r.kg}</td><td>${r.gwp??'未公告'}</td><td style="color:#718096">${r.leakRate}</td></tr>`).join('')}
+            <td>${r.kg}</td><td>${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td><td style="color:#718096">${r.leakRate}</td></tr>`).join('')}
           </tbody></table></div>`;
       }
       if(importPreview.fuel.length){
@@ -966,8 +1244,8 @@ function ensurePath(yr,mo){
 // Elec
 function toggleImportBox(){const b=document.getElementById('importBox');if(b)b.style.display=b.style.display==='none'?'block':'none';}
 function addElec(){
-  const meter=document.getElementById('ef-meter')?.value?.trim();
-  const kwh=parseFloat(document.getElementById('ef-kwh')?.value);
+  const meter=( document.getElementById('ef-meter') ? document.getElementById('ef-meter').value.trim() : '' );
+  const kwh=parseFloat(( document.getElementById('ef-kwh') ? document.getElementById('ef-kwh').value : '' ));
   if(!meter||!kwh)return;
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
@@ -975,72 +1253,72 @@ function addElec(){
     id:Date.now().toString(),
     site:document.getElementById('ef-site').value,
     meter,kwh,
-    amount:parseFloat(document.getElementById('ef-amt')?.value)||0,
-    startDate:document.getElementById('ef-s')?.value||'',
-    endDate:document.getElementById('ef-e')?.value||'',
+    amount:parseFloat(( document.getElementById('ef-amt') ? document.getElementById('ef-amt').value : '' ))||0,
+    startDate:( document.getElementById('ef-s') ? document.getElementById('ef-s').value : '' )||'',
+    endDate:( document.getElementById('ef-e') ? document.getElementById('ef-e').value : '' )||'',
     emission:calcElec(kwh,currentYear)
   });
   saveRec(REC);toast('已新增電力紀錄');pageElec();
 }
 function delElec(id){
   const yr=String(currentYear),mo=String(currentMonth);
-  if(REC[yr]?.[mo]?.electricity)REC[yr][mo].electricity=REC[yr][mo].electricity.filter(r=>r.id!==id);
+  if(( REC[yr] && REC[yr][mo] ? REC[yr][mo].electricity : null ))REC[yr][mo].electricity=REC[yr][mo].electricity.filter(r=>r.id!==id);
   saveRec(REC);toast('已刪除','info');pageElec();
 }
 function batchImportElec(){
-  const text=document.getElementById('importText')?.value;if(!text)return;
+  const text=( document.getElementById('importText') ? document.getElementById('importText').value : '' );if(!text)return;
   const lines=text.trim().split('\n').filter(l=>l.trim());
   const parsed=lines.map(line=>{
     const pts=line.split(/[\t,]/);if(pts.length<3)return null;
     const kwh=parseFloat(pts[2])||0;
-    return{id:Date.now()+Math.random(),site:pts[0]?.trim()||'汐止',meter:pts[1]?.trim()||'',kwh,amount:parseFloat(pts[3])||0,startDate:pts[4]?.trim()||'',endDate:pts[5]?.trim()||'',emission:calcElec(kwh,currentYear)};
+    return{id:Date.now()+Math.random(),site:( pts[0] ? pts[0].trim() : '' )||'汐止',meter:( pts[1] ? pts[1].trim() : '' )||'',kwh,amount:parseFloat(pts[3])||0,startDate:( pts[4] ? pts[4].trim() : '' )||'',endDate:( pts[5] ? pts[5].trim() : '' )||'',emission:calcElec(kwh,currentYear)};
   }).filter(Boolean);
   if(!parsed.length){toast('格式錯誤','error');return;}
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
-  REC[yr][mo].electricity=[...REC[yr][mo].electricity,...parsed];
+  REC[yr][mo].electricity=REC[yr][mo].electricity.concat(parsed);
   saveRec(REC);toast(`已匯入 ${parsed.length} 筆`);pageElec();
 }
 
 // Cat1
 function syncGwp(){
-  const sub=document.getElementById('rf-sub')?.value;
+  const sub=( document.getElementById('rf-sub') ? document.getElementById('rf-sub').value : '' );
   const found=COEFF.refrigerants.find(r=>r.name===sub);
   const gwpEl=document.getElementById('rf-gwp');
-  if(gwpEl&&found?.gwp)gwpEl.value=found.gwp;
+  if(gwpEl&&( found ? found.gwp : null ))gwpEl.value=found.gwp;
 }
 function addRefrig(){
-  const kg=parseFloat(document.getElementById('rf-kg')?.value);if(!kg)return;
+  const kg=parseFloat(( document.getElementById('rf-kg') ? document.getElementById('rf-kg').value : '' ));if(!kg)return;
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
-  const gwp=parseFloat(document.getElementById('rf-gwp')?.value)||null;
-  const leakRate=parseFloat(document.getElementById('rf-lr')?.value)||0.003;
-  REC[yr][mo].refrigerant.push({id:Date.now().toString(),site:document.getElementById('rf-site').value,device:document.getElementById('rf-dev')?.value||'',substance:document.getElementById('rf-sub')?.value||'',kg,gwp,leakRate,emission:calcRefrig(kg,leakRate,gwp)});
+  const gwp=parseFloat(( document.getElementById('rf-gwp') ? document.getElementById('rf-gwp').value : '' ))||null;
+  const leakRate=parseFloat(( document.getElementById('rf-lr') ? document.getElementById('rf-lr').value : '' ))||0.003;
+  REC[yr][mo].refrigerant.push({id:Date.now().toString(),site:document.getElementById('rf-site').value,device:( document.getElementById('rf-dev') ? document.getElementById('rf-dev').value : '' )||'',substance:( document.getElementById('rf-sub') ? document.getElementById('rf-sub').value : '' )||'',kg,gwp,leakRate,emission:calcRefrig(kg,leakRate,gwp)});
   saveRec(REC);toast('已新增冷媒紀錄');renderCat1Sub();
 }
 function addFuelRec(){
-  const amt=parseFloat(document.getElementById('ff-amt')?.value);
-  const price=parseFloat(document.getElementById('ff-price')?.value);
+  const amt=parseFloat(( document.getElementById('ff-amt') ? document.getElementById('ff-amt').value : '' ));
+  const price=parseFloat(( document.getElementById('ff-price') ? document.getElementById('ff-price').value : '' ));
   if(!amt||!price)return;
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
-  REC[yr][mo].fuel.push({id:Date.now().toString(),site:document.getElementById('ff-site').value,vehicle:document.getElementById('ff-veh')?.value||'',fuelType:document.getElementById('ff-ft')?.value||'車用汽油(92)',amount:amt,pricePerLiter:price,emission:calcFuel(amt,price)});
+  REC[yr][mo].fuel.push({id:Date.now().toString(),site:document.getElementById('ff-site').value,vehicle:( document.getElementById('ff-veh') ? document.getElementById('ff-veh').value : '' )||'',fuelType:( document.getElementById('ff-ft') ? document.getElementById('ff-ft').value : '車用汽油(92)' )||'車用汽油(92)',amount:amt,pricePerLiter:price,emission:calcFuel(amt,price)});
   saveRec(REC);toast('已新增移動源紀錄');renderCat1Sub();
 }
 function addSepticRec(){
-  const male=parseInt(document.getElementById('sf-m')?.value)||0;
-  const workDays=parseInt(document.getElementById('sf-d')?.value);
+  const male=parseInt(( document.getElementById('sf-m') ? document.getElementById('sf-m').value : '' ))||0;
+  const workDays=parseInt(( document.getElementById('sf-d') ? document.getElementById('sf-d').value : '' ));
   if(!workDays)return;
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
-  const female=parseInt(document.getElementById('sf-f')?.value)||0;
-  const hoursPerDay=parseInt(document.getElementById('sf-h')?.value)||8;
+  const female=parseInt(( document.getElementById('sf-f') ? document.getElementById('sf-f').value : '' ))||0;
+  const hoursPerDay=parseInt(( document.getElementById('sf-h') ? document.getElementById('sf-h').value : '' ))||8;
   REC[yr][mo].septicTank.push({id:Date.now().toString(),site:document.getElementById('sf-site').value,male,female,workDays,hoursPerDay,emission:calcSeptic(male,female,workDays,hoursPerDay)});
   saveRec(REC);toast('已新增化糞池紀錄');renderCat1Sub();
 }
 function delCat1(type,id){
   const yr=String(currentYear),mo=String(currentMonth);
-  if(REC[yr]?.[mo]?.[type])REC[yr][mo][type]=REC[yr][mo][type].filter(r=>r.id!==id);
+  if(( REC[yr] && REC[yr][mo] ? REC[yr][mo][type] : null ))REC[yr][mo][type]=REC[yr][mo][type].filter(r=>r.id!==id);
   saveRec(REC);toast('已刪除','info');renderCat1Sub();
 }
 
@@ -1048,17 +1326,17 @@ function delCat1(type,id){
 function updateElecFactor(i,v){COEFF.electricity[i].factor=+v;saveCoeff(COEFF);}
 function delElecRow(i){COEFF.electricity=COEFF.electricity.filter((_,j)=>j!==i);saveCoeff(COEFF);renderCoeffSub();}
 function addElecRow(){
-  const yr=+document.getElementById('ne-yr')?.value;
-  const fac=parseFloat(document.getElementById('ne-fac')?.value);
+  const yr=+( document.getElementById('ne-yr') ? document.getElementById('ne-yr').value : '' );
+  const fac=parseFloat(( document.getElementById('ne-fac') ? document.getElementById('ne-fac').value : '' ));
   if(!fac)return;
-  COEFF.electricity.push({year:yr,factor:fac,note:document.getElementById('ne-note')?.value||''});
+  COEFF.electricity.push({year:yr,factor:fac,note:( document.getElementById('ne-note') ? document.getElementById('ne-note').value : '' )||''});
   saveCoeff(COEFF);renderCoeffSub();toast('已新增電力係數');
 }
 function delRefrigRow(i){COEFF.refrigerants=COEFF.refrigerants.filter((_,j)=>j!==i);saveCoeff(COEFF);renderCoeffSub();}
 function addRefrigRow(){
-  const name=document.getElementById('nr-name')?.value?.trim();if(!name)return;
-  const gwp=document.getElementById('nr-gwp')?.value;
-  COEFF.refrigerants.push({name,gwp:gwp?+gwp:null,ar:document.getElementById('nr-ar')?.value||'AR6'});
+  const name=( document.getElementById('nr-name') ? document.getElementById('nr-name').value.trim() : '' );if(!name)return;
+  const gwp=( document.getElementById('nr-gwp') ? document.getElementById('nr-gwp').value : '' );
+  COEFF.refrigerants.push({name,gwp:gwp?+gwp:null,ar:( document.getElementById('nr-ar') ? document.getElementById('nr-ar').value : '' )||'AR6'});
   saveCoeff(COEFF);renderCoeffSub();toast('已新增冷媒');
 }
 function updateFuelCoeff(k,v){COEFF.fuel.gasoline92[k]=+v;saveCoeff(COEFF);}
@@ -1174,7 +1452,7 @@ function parseCat1Xlsx(wb){
   if(!result.refrigerant.length&&!result.fuel.length&&!result.septic.length){
     document.getElementById('import-status').innerHTML='<span style="color:#C53030">⚠️ 未找到有效資料，請確認是類別一直接排放檔案</span>';return;
   }
-  importPreview={type:'cat1',...result};
+  importPreview=Object.assign({type:'cat1'},result);
   renderImportStep('preview');
 }
 function commitImport(){
@@ -1183,7 +1461,7 @@ function commitImport(){
   if(!REC[yr])REC[yr]={};
   const ensure=m=>{const ms=String(m);if(!REC[yr][ms])REC[yr][ms]={electricity:[],refrigerant:[],fuel:[],septicTank:[]};};
   if(importPreview.type==='elec'){
-    importPreview.rows.forEach(r=>{ensure(r.month);REC[yr][String(r.month)].electricity.push({...r,emission:calcElec(r.kwh,importYear)});});
+    importPreview.rows.forEach(r=>{ensure(r.month);var _er=Object.assign({},r,{emission:calcElec(r.kwh,importYear)}); REC[yr][String(r.month)].electricity.push(_er);});
   }else{
     importPreview.refrigerant.forEach(r=>{ensure(1);REC[yr]['1'].refrigerant.push(r);});
     importPreview.fuel.forEach(r=>{ensure(r.month);REC[yr][String(r.month)].fuel.push(r);});
@@ -1214,8 +1492,8 @@ function renderMain(){
 // 帳單掃描頁
 // ═══════════════════════════════════════════════
 const SCAN_KEY='ghg_scanned_bills';
-function loadBills(){try{const s=localStorage.getItem(SCAN_KEY);return s?JSON.parse(s):[];}catch{return[];}}
-function saveBills(b){try{localStorage.setItem(SCAN_KEY,JSON.stringify(b));}catch{alert('儲存空間不足，請刪除部分舊佐證圖片');}}
+function loadBills(){try{const s=localStorage.getItem(SCAN_KEY);return s?JSON.parse(s):[];}catch(e){return[];}}
+function saveBills(b){try{localStorage.setItem(SCAN_KEY,JSON.stringify(b));}catch(e){alert('儲存空間不足，請刪除部分舊佐證圖片');}}
 let BILLS=loadBills();
 
 function pageScan(){
@@ -1381,7 +1659,7 @@ async function handleFiles(files){
   if(!files||!files.length)return;
   const key=localStorage.getItem('ghg_api_key')||'';
   if(!key){alert('請先填入 Anthropic API Key');return;}
-  const billType=document.getElementById('scanBillType')?.value||'auto';
+  const billType=( document.getElementById('scanBillType') ? document.getElementById('scanBillType').value : 'auto' )||'auto';
 
   for(const file of Array.from(files)){
     const id='bill_'+Date.now()+'_'+Math.random().toString(36).slice(2);
@@ -1464,15 +1742,15 @@ async function callClaudeVision(dataUri, mimeType, billType, apiKey){
 
   if(!resp.ok){
     const err=await resp.json().catch(()=>({}));
-    throw new Error(err.error?.message||`API 錯誤 ${resp.status}`);
+    throw new Error(( err.error ? err.error.message : '' )||`API 錯誤 ${resp.status}`);
   }
 
   const data=await resp.json();
-  const text=data.content?.find(c=>c.type==='text')?.text||'';
+  const text=( data.content ? (data.content.find(function(c){return c.type==='text';}) || {}).text : null )||'';
   // 解析 JSON（去除 markdown code fence）
   const clean=text.replace(/```json|```/g,'').trim();
   try{return JSON.parse(clean);}
-  catch{throw new Error('AI 回傳格式異常：'+text.slice(0,200));}
+  catch(e){throw new Error('AI 回傳格式異常：'+text.slice(0,200));}
 }
 
 // ── 確認匯入單筆 ──
@@ -1531,7 +1809,7 @@ function writeToRec(bill){
       const w=JSON.parse(localStorage.getItem(waterKey)||'[]');
       w.push({id:bill.id,site:p.site||'汐止',meter:p.meter||'',month,usage:parseFloat(p.usage)||0,amount:parseFloat(p.amount)||0,startDate:p.startDate||'',endDate:p.endDate||'',_evidence:{fileName:bill.fileName,scannedAt:bill.createdAt}});
       localStorage.setItem(waterKey,JSON.stringify(w));
-    }catch{}
+    }catch(e){}
     // toast 提示
     setTimeout(()=>toast('水費單已存入備用區（水費模組待開發）','info'),100);
   }
@@ -1556,14 +1834,14 @@ function clearCommitted(){
 
 // ── 測試 API ──
 async function testApiKey(){
-  const key=document.getElementById('apiKeyInput')?.value||localStorage.getItem('ghg_api_key')||'';
+  const key=( document.getElementById('apiKeyInput') ? document.getElementById('apiKeyInput').value : '' )||localStorage.getItem('ghg_api_key')||'';
   const el=document.getElementById('apiStatus');
   if(!key){if(el)el.textContent='請先填入 API Key';return;}
   if(el)el.textContent='測試中...';
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]})});
     const d=await r.json();
-    if(el)el.innerHTML=r.ok?'<span style="color:#276749">✅ 連線成功！可以開始掃描帳單</span>':'<span style="color:#C53030">❌ 錯誤：'+(d.error?.message||r.status)+'</span>';
+    if(el)el.innerHTML=r.ok?'<span style="color:#276749">✅ 連線成功！可以開始掃描帳單</span>':'<span style="color:#C53030">❌ 錯誤：'+(( d.error ? d.error.message : '' )||r.status)+'</span>';
   }catch(e){if(el)el.innerHTML='<span style="color:#C53030">❌ 網路錯誤：'+esc(e.message)+'</span>';}
 }
 
@@ -1577,14 +1855,22 @@ function editBill(id){
   const amount=prompt('金額：',p.amount||'');if(amount===null)return;
   const startDate=prompt('起始日（YYYY-MM-DD）：',p.startDate||'');if(startDate===null)return;
   const endDate=prompt('結束日（YYYY-MM-DD）：',p.endDate||'');if(endDate===null)return;
-  b.parsed={...p,site,meter,kwh:parseFloat(kwh)||p.kwh,amount:parseFloat(amount)||p.amount,startDate,endDate};
+  b.parsed=Object.assign({},p,{site:site,meter:meter,kwh:parseFloat(kwh)||p.kwh,amount:parseFloat(amount)||p.amount,startDate:startDate,endDate:endDate});
   saveBills(BILLS);renderBillList();
   toast('已更新解析結果');
 }
 
 // Init
-renderNav();
-renderMain();
+try {
+  renderNav();
+} catch(e) {
+  document.getElementById('nav').innerHTML = '<div style="color:red;padding:10px;font-size:11px">Nav error: '+e.message+'</div>';
+}
+try {
+  renderMain();
+} catch(e) {
+  document.getElementById('main').innerHTML = '<div style="background:#FFF5F5;border:2px solid red;padding:20px;margin:20px;font-family:monospace;font-size:12px"><strong>Error in renderMain:</strong><br>'+e.message+'<br><br>'+e.stack+'</div>';
+}
 </script>
 </body>
 </html>
