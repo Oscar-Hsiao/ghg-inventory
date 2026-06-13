@@ -4,17 +4,18 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>GHG 溫室氣體盤查系統 — 公信電子</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ── 頂部管理列 ── */
 #adminBar{position:fixed;top:0;left:0;right:0;height:44px;background:#1a1a2e;display:flex;align-items:center;justify-content:flex-end;padding:0 20px;gap:12px;z-index:200;font-size:13px}
 #adminBar .ab-label{color:rgba(255,255,255,.5)}
 #adminBar input{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:6px;padding:4px 10px;font-size:13px;width:140px;letter-spacing:.1em}
 #adminBar input::placeholder{color:rgba(255,255,255,.3)}
-#adminBar input:focus{outline:none;border-color:#4ade80}
+#adminBar input:focus{outline:none;border-color:#58A05E}
 .ab-btn{padding:5px 14px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer}
-.ab-login{background:#4ade80;color:#0d2d20}
+.ab-login{background:#58A05E;color:#2F3437}
 .ab-logout{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
-.ab-badge{background:#4ade80;color:#0d2d20;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+.ab-badge{background:#58A05E;color:#2F3437;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
 /* 管理列存在時主體下移 */
 body{padding-top:44px}
 #sidebar{top:44px;min-height:calc(100vh - 44px)}
@@ -22,23 +23,23 @@ body{padding-top:44px}
 #loginModal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999}
 #loginModal.hidden{display:none}
 .lm-box{background:#fff;border-radius:14px;padding:36px 32px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
-.lm-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#0d2d20}
-.lm-input{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:12px;text-align:center;letter-spacing:.2em;font-family:monospace}
-.lm-input:focus{outline:2px solid #0F6E56;border-color:transparent}
-.lm-btn{width:100%;background:#0F6E56;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer}
-.lm-err{color:#C53030;font-size:12px;margin-top:10px;min-height:18px}
-.lm-cancel{background:none;border:none;color:#718096;font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline}
+.lm-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#2F3437}
+.lm-input{width:100%;border:1px solid #EAEAEA;border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:12px;text-align:center;letter-spacing:.2em;font-family:monospace}
+.lm-input:focus{outline:2px solid #346538;border-color:transparent}
+.lm-btn{width:100%;background:#346538;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer}
+.lm-err{color:#AF4040;font-size:12px;margin-top:10px;min-height:18px}
+.lm-cancel{background:none;border:none;color:#787774;font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline}
 /* 唯讀模式：隱藏編輯用元素 */
 body.readonly .admin-only{display:none!important}
 </style>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Microsoft JhengHei','Noto Sans TC',system-ui,sans-serif;background:#f0f4f8;color:#1a202c;display:flex;min-height:100vh}
+body{font-family:'Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;background:#FBFBFA;color:#2F3437;display:flex;min-height:100vh}
 /* Sidebar */
-#sidebar{width:210px;min-height:100vh;background:#0d2d20;position:fixed;top:0;left:0;padding:0;z-index:100;display:flex;flex-direction:column}
+#sidebar{width:210px;min-height:100vh;background:#2F3437;position:fixed;top:0;left:0;padding:0;z-index:100;display:flex;flex-direction:column}
 .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sb-company{font-size:11px;color:#4ade80;font-weight:700;letter-spacing:.1em;margin-bottom:3px}
-.sb-title{font-size:15px;font-weight:700;color:#fff}
+.sb-company{font-size:11px;color:#58A05E;font-weight:700;letter-spacing:.1em;margin-bottom:3px}
+.sb-title{font-size:15px;font-weight:700;color:#fff;font-family:'Noto Serif TC','Noto Sans TC',serif}
 .sb-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
 .sb-nav{padding:14px 10px;display:flex;flex-direction:column;gap:3px;flex:1}
 .sb-btn{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:13px;cursor:pointer;text-align:left;width:100%;transition:all .15s;font-family:inherit}
@@ -47,46 +48,46 @@ body{font-family:'Microsoft JhengHei','Noto Sans TC',system-ui,sans-serif;backgr
 /* Main */
 #main{margin-left:210px;flex:1;padding:28px 32px;max-width:calc(100vw - 210px)}
 /* Cards */
-.card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:20px 24px;margin-bottom:16px}
+.card{background:#fff;border-radius:12px;border:1px solid #EAEAEA;padding:20px 24px;margin-bottom:16px}
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.metric-card{background:#fff;border-radius:10px;border:1px solid #e2e8f0;padding:16px 20px}
-.metric-label{font-size:12px;color:#718096;margin-bottom:6px}
+.metric-card{background:#fff;border-radius:10px;border:1px solid #EAEAEA;padding:16px 20px}
+.metric-label{font-size:12px;color:#787774;margin-bottom:6px}
 .metric-value{font-size:26px;font-weight:700}
-.metric-unit{font-size:12px;color:#718096;margin-top:2px}
-.section-title{font-size:12px;font-weight:700;color:#718096;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.metric-unit{font-size:12px;color:#787774;margin-top:2px}
+.section-title{font-size:12px;font-weight:700;color:#787774;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
 /* Table */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 10px;font-weight:600;color:#718096;font-size:12px;border-bottom:1px solid #e2e8f0}
-td{padding:8px 10px;border-bottom:1px solid #f0f4f8}
+th{text-align:left;padding:8px 10px;font-weight:600;color:#787774;font-size:12px;border-bottom:1px solid #EAEAEA}
+td{padding:8px 10px;border-bottom:1px solid #FBFBFA}
 tr:last-child td{border-bottom:none}
 /* Form */
 .form-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
 .form-group{display:flex;flex-direction:column;gap:4px;min-width:80px}
 .form-group.flex1{flex:1}
-.form-label{font-size:12px;color:#718096}
-input,select,textarea{border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px;color:#1a202c;background:#fff;font-family:inherit;width:100%}
-input:focus,select:focus{outline:2px solid #0F6E56;border-color:transparent}
+.form-label{font-size:12px;color:#787774}
+input,select,textarea{border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px;color:#2F3437;background:#fff;font-family:inherit;width:100%}
+input:focus,select:focus{outline:2px solid #346538;border-color:transparent}
 /* Buttons */
 .btn{padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;border:none;font-family:inherit;white-space:nowrap}
-.btn-primary{background:#0F6E56;color:#fff}
-.btn-primary:hover{background:#0a5a45}
-.btn-danger{background:#fff;color:#C53030;border:1px solid #FC8181}
-.btn-ghost{background:transparent;color:#718096;border:1px solid #e2e8f0}
-.btn-ghost:hover{background:#f7fafc}
+.btn-primary{background:#346538;color:#fff}
+.btn-primary:hover{background:#2A4F2C}
+.btn-danger{background:#fff;color:#AF4040;border:1px solid #AF4040}
+.btn-ghost{background:transparent;color:#787774;border:1px solid #EAEAEA}
+.btn-ghost:hover{background:#F7F6F3}
 /* Badge */
 .badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
 /* Tabs */
 .tabs{display:flex;gap:6px;margin-bottom:16px}
 .tab{padding:8px 16px;border-radius:8px;border:none;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s}
-.tab.active{background:#0F6E56;color:#fff;font-weight:600}
-.tab:not(.active){background:transparent;color:#718096}
-.tab:not(.active):hover{background:#f0f4f8}
+.tab.active{background:#346538;color:#fff;font-weight:600}
+.tab:not(.active){background:transparent;color:#787774}
+.tab:not(.active):hover{background:#FBFBFA}
 /* Toast */
-#toast{position:fixed;top:20px;right:20px;z-index:9999;background:#276749;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);display:none;max-width:300px}
+#toast{position:fixed;top:20px;right:20px;z-index:9999;background:#346538;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);display:none;max-width:300px}
 /* Page header */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-title{font-size:22px;font-weight:700}
-.page-sub{font-size:13px;color:#718096;margin-top:4px}
+.page-title{font-size:22px;font-weight:700;font-family:'Noto Serif TC','Noto Sans TC',serif}
+.page-sub{font-size:13px;color:#787774;margin-top:4px}
 .header-controls{display:flex;gap:8px;align-items:center}
 /* Chart */
 .chart-container{position:relative}
@@ -95,18 +96,18 @@ canvas{display:block}
 .two-col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
 /* Import cards */
 .import-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.import-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:20px 22px;cursor:pointer;transition:border-color .15s}
-.import-card:hover{border-color:#0F6E56}
-.import-card.selected{border-color:#0F6E56}
+.import-card{background:#fff;border:2px solid #EAEAEA;border-radius:12px;padding:20px 22px;cursor:pointer;transition:border-color .15s}
+.import-card:hover{border-color:#346538}
+.import-card.selected{border-color:#346538}
 /* Progress bar */
-.prog-bar{flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;background:#0F6E56;border-radius:3px;transition:width .3s}
+.prog-bar{flex:1;height:6px;background:#EAEAEA;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#346538;border-radius:3px;transition:width .3s}
 /* Info box */
-.info-box{padding:14px;background:#f0fdf4;border-radius:8px;font-size:12px;color:#276749;line-height:1.8;margin-top:14px}
+.info-box{padding:14px;background:#EDF3EC;border-radius:8px;font-size:12px;color:#346538;line-height:1.8;margin-top:14px}
 /* Empty */
-.empty{color:#718096;font-size:13px;padding:24px 0;text-align:center}
+.empty{color:#787774;font-size:13px;padding:24px 0;text-align:center}
 /* Pending badge */
-.badge-pending{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;background:#f0f4f8;color:#718096;border:1px solid #e2e8f0}
+.badge-pending{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;background:#FBFBFA;color:#787774;border:1px solid #EAEAEA}
 select[style*="width"]{width:auto}
 </style>
 </head>
@@ -208,7 +209,7 @@ select[style*="width"]{width:auto}
 // Global error handler - display errors on screen
 window.onerror = function(msg, src, line, col, err) {
   var div = document.createElement('div');
-  div.style.cssText = 'position:fixed;top:50px;left:220px;right:0;background:#FFF5F5;border:2px solid #FC8181;padding:16px;z-index:8888;font-family:monospace;font-size:13px;color:#C53030';
+  div.style.cssText = 'position:fixed;top:50px;left:220px;right:0;background:#FFF5F5;border:2px solid #AF4040;padding:16px;z-index:8888;font-family:monospace;font-size:13px;color:#AF4040';
   div.innerHTML = '<strong>JS Error:</strong> ' + msg + '<br>Line: ' + line + ' Col: ' + col + '<br>' + (err ? err.stack : '');
   document.body.appendChild(div);
   return false;
@@ -233,7 +234,13 @@ const DEFAULT_COEFF={
     {name:'Halon (海龍)',gwp:1930,ar:'AR6'},
   ],
   fuel:{gasoline92:{co2:2.263132872,ch4:0.000816426,n2o:0.000261256,gwp_ch4:27.9,gwp_n2o:273,note:'環境部 6.0.4'}},
-  septicTank:{bo:0.6,mcf:0.5,gwp_ch4:27.9,bod_per_person_day:0.000015,daily_hours:8}
+  septicTank:{bo:0.6,mcf:0.5,gwp_ch4:27.9,bod_per_person_day:0.000015,daily_hours:8},
+  // 排放係數資料庫版本管理：記錄各類係數採用的版本/來源與更新日期，供查證單位追溯
+  meta:{
+    refrigerants:{version:'IPCC AR6 GWP 值',updatedAt:'2025-01-01',note:'冷媒 GWP 採用 IPCC 第六次評估報告(AR6)'},
+    fuel:{version:'環境部溫室氣體排放係數管理表 6.0.4版',updatedAt:'2024-12-01',note:''},
+    septicTank:{version:'環境部溫室氣體排放係數管理表 6.0.4版',updatedAt:'2024-12-01',note:''}
+  }
 };
 
 const ANNUAL_SUMMARY = {
@@ -293,14 +300,28 @@ const ANNUAL_SUMMARY = {
 
 const DEMO={records:{"2025":{"1":{"electricity":[{"id":"xl_e_1","site":"汐止","meter":"2935001313","kwh":1073.0,"amount":2678.0,"startDate":"2024-11-15","endDate":"2025-01-13","emission":null}],"refrigerant":[],"fuel":[],"septicTank":[]}}}};
 function loadRec(){try{const s=localStorage.getItem(REC_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEMO.records));}catch(e){return JSON.parse(JSON.stringify(DEMO.records));}}
-function loadCoeff(){try{const s=localStorage.getItem(COEFF_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_COEFF));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_COEFF));}}
+function loadCoeff(){
+  try{
+    const s=localStorage.getItem(COEFF_KEY);
+    const c=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_COEFF));
+    if(!c.meta)c.meta=JSON.parse(JSON.stringify(DEFAULT_COEFF.meta));
+    return c;
+  }catch(e){return JSON.parse(JSON.stringify(DEFAULT_COEFF));}
+}
 function saveRec(r){try{localStorage.setItem(REC_KEY,JSON.stringify(r));}catch(e){}}
 function saveCoeff(c){try{localStorage.setItem(COEFF_KEY,JSON.stringify(c));}catch(e){}}
 
 let REC=loadRec(), COEFF=loadCoeff();
 let currentTab='dashboard', currentYear=2025, currentMonth=1, currentSite='all';
 
-function getElecFactor(year){return(COEFF.electricity.find(e=>e.year===year)||COEFF.electricity[0]).factor;}
+function getElecFactorInfo(year){return COEFF.electricity.find(e=>e.year===year)||COEFF.electricity[0];}
+function getElecFactor(year){return getElecFactorInfo(year).factor;}
+function coeffVersionLabel(type,year){
+  if(type==='electricity'){const f=getElecFactorInfo(year);return`${f.note||'台電公告'}（${f.year}年版，${f.factor} kgCO₂e/度）`;}
+  const m=COEFF.meta&&COEFF.meta[type];
+  if(!m)return'';
+  return`${m.version}（更新日：${m.updatedAt}）`;
+}
 function calcElec(kwh,year){return+(kwh*getElecFactor(year)/1000).toFixed(6);}
 function calcRefrig(kg,leakRate,gwp){if(!gwp)return null;return+(kg*gwp*leakRate/1000).toFixed(6);}
 function calcFuel(amount,price){if(!price||price<=0)return 0;const f=COEFF.fuel.gasoline92,L=amount/price;return+((L*f.co2+L*f.ch4*f.gwp_ch4+L*f.n2o*f.gwp_n2o)/1000).toFixed(6);}
@@ -359,7 +380,7 @@ function toast(msg,type){
   if(type===undefined)type='success';
   const el=document.getElementById('toast');
   el.textContent=msg;
-  el.style.background=type==='success'?'#276749':'#C53030';
+  el.style.background=type==='success'?'#346538':'#AF4040';
   el.style.display='block';
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>{el.style.display='none';},2800);
@@ -393,7 +414,7 @@ function drawBarChart(canvasId,data){
   for(let i=0;i<=4;i++){
     const y=pad.top+chartH*(1-i/4);
     ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+chartW,y);ctx.stroke();
-    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='right';
     ctx.fillText(fmt(maxVal*i/4,3),pad.left-4,y+3);
   }
 
@@ -404,19 +425,19 @@ function drawBarChart(canvasId,data){
     const h2=d.cat2/maxVal*chartH;
 
     // cat1 (bottom)
-    if(h1>0){ctx.fillStyle='#0F6E56';ctx.fillRect(x,pad.top+chartH-h1,bw,h1);}
+    if(h1>0){ctx.fillStyle='#346538';ctx.fillRect(x,pad.top+chartH-h1,bw,h1);}
     // cat2 (top)
-    if(h2>0){ctx.fillStyle='#185FA5';ctx.fillRect(x,pad.top+chartH-h1-h2,bw,h2);}
+    if(h2>0){ctx.fillStyle='#1F6C9F';ctx.fillRect(x,pad.top+chartH-h1-h2,bw,h2);}
 
     // x label
-    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='center';
     ctx.fillText(d.name,pad.left+i*barW+barW/2,H-8);
   });
 
   // Legend
-  [['類別一',`#0F6E56`],['類別二','#185FA5']].forEach(([name,color],i)=>{
+  [['類別一',`#346538`],['類別二','#1F6C9F']].forEach(([name,color],i)=>{
     ctx.fillStyle=color;ctx.fillRect(W-120+i*58,6,12,10);
-    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='left';
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='left';
     ctx.fillText(name,W-106+i*58,15);
   });
 }
@@ -427,7 +448,7 @@ function drawPieChart(canvasId,data){
   const W=canvas.width,H=canvas.height;
   ctx.clearRect(0,0,W,H);
   const total=data.reduce((s,d)=>s+d.value,0);
-  if(total<=0){ctx.fillStyle='#718096';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
+  if(total<=0){ctx.fillStyle='#787774';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
 
   const cx=W/2-30,cy=H/2,r=Math.min(cx,cy)-20;
   let startAngle=-Math.PI/2;
@@ -444,9 +465,9 @@ function drawPieChart(canvasId,data){
   const lx=W-90,ly=H/2-data.length*12;
   data.forEach((d,i)=>{
     ctx.fillStyle=d.color;ctx.fillRect(lx,ly+i*22,12,12);
-    ctx.fillStyle='#1a202c';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillStyle='#2F3437';ctx.font='11px sans-serif';ctx.textAlign='left';
     ctx.fillText(d.name,lx+16,ly+i*22+10);
-    ctx.fillStyle='#718096';
+    ctx.fillStyle='#787774';
     ctx.fillText(`${(d.value/total*100).toFixed(0)}%`,lx+16,ly+i*22+21);
   });
 }
@@ -487,13 +508,13 @@ function goto(tab){currentTab=tab;renderNav();renderMain();}
 // Year/Month/Site selects
 // ═══════════════════════════════════════════════
 function yearSel(val,onchange){
-  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${[2023,2024,2025,2026].map(y=>`<option value="${y}"${val==y?' selected':''}>${y}年</option>`).join('')}</select>`;
+  return`<select onchange="${onchange}" style="border:1px solid #EAEAEA;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${[2023,2024,2025,2026].map(y=>`<option value="${y}"${val==y?' selected':''}>${y}年</option>`).join('')}</select>`;
 }
 function monthSel(val,onchange){
-  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${Array.from({length:12},(_,i)=>`<option value="${i+1}"${val==i+1?' selected':''}>${i+1}月</option>`).join('')}</select>`;
+  return`<select onchange="${onchange}" style="border:1px solid #EAEAEA;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff">${Array.from({length:12},(_,i)=>`<option value="${i+1}"${val==i+1?' selected':''}>${i+1}月</option>`).join('')}</select>`;
 }
 function siteSel(val,onchange){
-  return`<select onchange="${onchange}" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff"><option value="all"${val==='all'?' selected':''}>全場域</option><option value="汐止"${val==='汐止'?' selected':''}>汐止</option><option value="南港"${val==='南港'?' selected':''}>南港</option></select>`;
+  return`<select onchange="${onchange}" style="border:1px solid #EAEAEA;border-radius:8px;padding:6px 10px;font-size:13px;background:#fff"><option value="all"${val==='all'?' selected':''}>全場域</option><option value="汐止"${val==='汐止'?' selected':''}>汐止</option><option value="南港"${val==='南港'?' selected':''}>南港</option></select>`;
 }
 function metricCard(label,value,unit,color){
   return`<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value" style="color:${color}">${value}</div><div class="metric-unit">${unit}</div></div>`;
@@ -532,11 +553,11 @@ function pageDashboard(){
 
   var siteTabData=[['ALL','全公司'],['TW','台灣廠'],['XM','廈門廠']];
   var siteBtnEl=document.createElement('div');
-  siteBtnEl.style.cssText='display:flex;gap:0;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden';
+  siteBtnEl.style.cssText='display:flex;gap:0;border:1px solid #EAEAEA;border-radius:8px;overflow:hidden';
   siteTabData.forEach(function(t){
     var btn=document.createElement('button');
     btn.textContent=t[1];
-    btn.style.cssText='padding:6px 14px;border:none;font-size:13px;cursor:pointer;background:'+(activeKey===t[0]?'#0F6E56':'#fff')+';color:'+(activeKey===t[0]?'#fff':'#718096')+';font-family:inherit';
+    btn.style.cssText='padding:6px 14px;border:none;font-size:13px;cursor:pointer;background:'+(activeKey===t[0]?'#346538':'#fff')+';color:'+(activeKey===t[0]?'#fff':'#787774')+';font-family:inherit';
     (function(k){btn.onclick=function(){window._dashSite=k;pageDashboard();};})(t[0]);
     siteBtnEl.appendChild(btn);
   });
@@ -544,7 +565,7 @@ function pageDashboard(){
 
   var siteRows=[twD,xmD].map(function(r){
     var rt=+(r.cat1+r.cat2+r.cat3+r.cat4).toFixed(2);
-    return '<tr><td style="font-weight:600">'+esc(r.site)+'</td><td style="color:#0F6E56">'+r.cat1.toFixed(2)+'</td><td style="color:#185FA5">'+r.cat2.toFixed(2)+'</td><td style="color:#854F0B">'+r.cat3.toFixed(2)+'</td><td style="color:#533AB7">'+r.cat4.toFixed(2)+'</td><td style="font-weight:700">'+rt.toFixed(2)+'</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%;height:100%;background:#0F6E56;border-radius:3px"></div></div><span style="font-size:12px;font-weight:600;color:#0F6E56;min-width:40px">'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%</span></div></td></tr>';
+    return '<tr><td style="font-weight:600">'+esc(r.site)+'</td><td style="color:#346538">'+r.cat1.toFixed(2)+'</td><td style="color:#1F6C9F">'+r.cat2.toFixed(2)+'</td><td style="color:#956400">'+r.cat3.toFixed(2)+'</td><td style="color:#6B4FA0">'+r.cat4.toFixed(2)+'</td><td style="font-weight:700">'+rt.toFixed(2)+'</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:#EAEAEA;border-radius:3px;overflow:hidden"><div style="width:'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%;height:100%;background:#346538;border-radius:3px"></div></div><span style="font-size:12px;font-weight:600;color:#346538;min-width:40px">'+(allTotal>0?(rt/allTotal*100).toFixed(1):0)+'%</span></div></td></tr>';
   }).join('');
 
   var cat1Breakdown=activeKey==='ALL'
@@ -563,37 +584,47 @@ function pageDashboard(){
         '</div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px">'+
-      metricCard('年度總排放',total.toFixed(2),'公噸 CO₂e','#0F6E56')+
-      metricCard('類別一 直接排放',d.cat1.toFixed(2),'公噸 CO₂e','#0F6E56')+
-      metricCard('類別二 外購電力',d.cat2.toFixed(2),'公噸 CO₂e','#185FA5')+
-      metricCard('類別三 員工通勤',d.cat3.toFixed(2),'公噸 CO₂e','#854F0B')+
-      metricCard('類別四 間接排放',d.cat4.toFixed(2),'公噸 CO₂e','#533AB7')+
+      metricCard('年度總排放',total.toFixed(2),'公噸 CO₂e','#346538')+
+      metricCard('類別一 直接排放（Scope 1）',d.cat1.toFixed(2),'公噸 CO₂e','#346538')+
+      metricCard('類別二 外購電力（Scope 2）',d.cat2.toFixed(2),'公噸 CO₂e','#1F6C9F')+
+      metricCard('類別三 員工通勤（Scope 3）',d.cat3.toFixed(2),'公噸 CO₂e','#956400')+
+      metricCard('類別四 間接排放（Scope 3）',d.cat4.toFixed(2),'公噸 CO₂e','#6B4FA0')+
     '</div>'+
     '<div style="display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px">'+
       '<div class="card"><div class="section-title">各類別排放量比較（公噸 CO₂e）</div><canvas id="catBarChart" width="560" height="200"></canvas></div>'+
       '<div class="card"><div class="section-title">排放類別占比</div><canvas id="catPieChart" width="340" height="200"></canvas></div>'+
     '</div>'+
     '<div class="card" style="margin-bottom:16px">'+
+      '<div class="section-title">年度比較（'+(year-1)+' 年 vs '+year+' 年，類別一＋二，依填報資料）</div>'+
+      '<canvas id="yoyChart" width="900" height="220"></canvas>'+
+    '</div>'+
+    '<div class="card" style="margin-bottom:16px">'+
       '<div class="section-title">場域排放比較（公噸 CO₂e）</div>'+
       '<div style="overflow-x:auto"><table>'+
-        '<thead><tr><th>場域</th><th style="color:#0F6E56">類別一</th><th style="color:#185FA5">類別二</th><th style="color:#854F0B">類別三</th><th style="color:#533AB7">類別四</th><th>合計</th><th>占全公司比</th></tr></thead>'+
+        '<thead><tr><th>場域</th><th style="color:#346538">類別一（Scope 1）</th><th style="color:#1F6C9F">類別二（Scope 2）</th><th style="color:#956400">類別三（Scope 3）</th><th style="color:#6B4FA0">類別四（Scope 3）</th><th>合計</th><th>占全公司比</th></tr></thead>'+
         '<tbody>'+siteRows+
-          '<tr style="background:#f0fdf4;font-weight:700"><td>全公司合計</td><td style="color:#0F6E56">'+allD.cat1.toFixed(2)+'</td><td style="color:#185FA5">'+allD.cat2.toFixed(2)+'</td><td style="color:#854F0B">'+allD.cat3.toFixed(2)+'</td><td style="color:#533AB7">'+allD.cat4.toFixed(2)+'</td><td>'+allTotal+'</td><td>100%</td></tr>'+
+          '<tr style="background:#EDF3EC;font-weight:700"><td>全公司合計</td><td style="color:#346538">'+allD.cat1.toFixed(2)+'</td><td style="color:#1F6C9F">'+allD.cat2.toFixed(2)+'</td><td style="color:#956400">'+allD.cat3.toFixed(2)+'</td><td style="color:#6B4FA0">'+allD.cat4.toFixed(2)+'</td><td>'+allTotal+'</td><td>100%</td></tr>'+
         '</tbody></table></div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
-      '<div class="card"><div class="section-title" style="color:#0F6E56">類別一 直接排放明細</div>'+renderBreakdownTable(cat1Breakdown,'#0F6E56')+'</div>'+
-      '<div class="card"><div class="section-title" style="color:#533AB7">類別四 間接排放明細</div>'+renderBreakdownTable(cat4Breakdown,'#533AB7')+'</div>'+
+      '<div class="card"><div class="section-title" style="color:#346538">類別一 直接排放明細</div>'+renderBreakdownTable(cat1Breakdown,'#346538')+'</div>'+
+      '<div class="card"><div class="section-title" style="color:#6B4FA0">類別四 間接排放明細</div>'+renderBreakdownTable(cat4Breakdown,'#6B4FA0')+'</div>'+
     '</div>';
 
   var catData=[
-    {name:'類別一\n直接排放',value:d.cat1,color:'#0F6E56'},
-    {name:'類別二\n外購電力',value:d.cat2,color:'#185FA5'},
-    {name:'類別三\n員工通勤',value:d.cat3,color:'#854F0B'},
-    {name:'類別四\n間接排放',value:d.cat4,color:'#533AB7'},
+    {name:'類別一\nScope 1',value:d.cat1,color:'#346538'},
+    {name:'類別二\nScope 2',value:d.cat2,color:'#1F6C9F'},
+    {name:'類別三\nScope 3',value:d.cat3,color:'#956400'},
+    {name:'類別四\nScope 3',value:d.cat4,color:'#6B4FA0'},
   ];
   drawCatBar('catBarChart',catData);
   drawCatPie('catPieChart',catData);
+  var sumLast=getSummary(year-1),sumCurr=getSummary(year);
+  drawYoYChart('yoyChart',[
+    {name:'類別一 直接排放',last:sumLast.total.cat1,curr:sumCurr.total.cat1,color:'#346538'},
+    {name:'類別二 外購電力',last:sumLast.total.cat2,curr:sumCurr.total.cat2,color:'#1F6C9F'},
+    {name:'合計',last:sumLast.total.cat1+sumLast.total.cat2,curr:sumCurr.total.cat1+sumCurr.total.cat2,color:'#6B4FA0'},
+  ]);
   var hCtrl=document.getElementById('dashHeaderCtrl');
   if(hCtrl)hCtrl.appendChild(siteBtnEl);
 }
@@ -604,7 +635,7 @@ function renderBreakdownTable(items,color){
     <tbody>${items.map(r=>`<tr>
       <td style="font-size:12px">${esc(r.name)}</td>
       <td style="font-weight:600;color:${color}">${(r.emission||0).toFixed(4)}</td>
-      <td style="font-size:12px;color:#718096">${total>0?((r.emission||0)/total*100).toFixed(1)+'%':'—'}</td>
+      <td style="font-size:12px;color:#787774">${total>0?((r.emission||0)/total*100).toFixed(1)+'%':'—'}</td>
     </tr>`).join('')}</tbody>
   </table>`;
 }
@@ -633,7 +664,7 @@ function drawCatBar(canvasId,data){
     var y=pad.top+cH*(1-i/4);
     ctx.strokeStyle='#f0f0f0';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+cW,y);ctx.stroke();
-    ctx.fillStyle='#718096';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='right';
     ctx.fillText((maxVal*i/4).toFixed(0),pad.left-6,y+3);
   }
   data.forEach(function(d,i){
@@ -643,22 +674,66 @@ function drawCatBar(canvasId,data){
     ctx.fillStyle=d.color;
     roundedRect(ctx,x,pad.top+cH-h,bwidth,h,4);
     ctx.fill();
-    ctx.fillStyle='#1a202c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#2F3437';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
     ctx.fillText(d.value.toFixed(1),x+bwidth/2,pad.top+cH-h-6);
     var lines=d.name.split('\n');
     lines.forEach(function(line,li){
-      ctx.fillStyle='#718096';ctx.font='10px sans-serif';
+      ctx.fillStyle='#787774';ctx.font='10px sans-serif';
       ctx.fillText(line,pad.left+i*bw+bw/2,H-pad.bottom+15+li*13);
     });
   });
 }
+function drawYoYChart(canvasId,groups){
+  var canvas=document.getElementById(canvasId);if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  var pad={top:24,right:20,bottom:46,left:60};
+  var cW=W-pad.left-pad.right,cH=H-pad.top-pad.bottom;
+  var maxVal=Math.max.apply(null,groups.map(function(g){return Math.max(g.last,g.curr);}).concat([0.001]));
+  var gw=cW/groups.length;
+  for(var i=0;i<=4;i++){
+    var y=pad.top+cH*(1-i/4);
+    ctx.strokeStyle='#f0f0f0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+cW,y);ctx.stroke();
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText((maxVal*i/4).toFixed(0),pad.left-6,y+3);
+  }
+  groups.forEach(function(g,i){
+    var bw=gw*0.28;
+    var x0=pad.left+i*gw+gw*0.18;
+    var hLast=Math.max(g.last/maxVal*cH,0);
+    var hCurr=Math.max(g.curr/maxVal*cH,0);
+    ctx.fillStyle='#A8A29E';
+    roundedRect(ctx,x0,pad.top+cH-hLast,bw,hLast,3);ctx.fill();
+    ctx.fillStyle=g.color;
+    roundedRect(ctx,x0+bw+6,pad.top+cH-hCurr,bw,hCurr,3);ctx.fill();
+    ctx.fillStyle='#2F3437';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText(g.last.toFixed(1),x0+bw/2,pad.top+cH-hLast-6);
+    ctx.fillText(g.curr.toFixed(1),x0+bw+6+bw/2,pad.top+cH-hCurr-6);
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';
+    ctx.fillText(g.name,x0+bw+3,H-pad.bottom+15);
+    var pct=g.last>0?((g.curr-g.last)/g.last*100):0;
+    var pctTxt=(pct>=0?'+':'')+pct.toFixed(1)+'%';
+    ctx.fillStyle=pct>0?'#AF4040':'#346538';
+    ctx.fillText(pctTxt,x0+bw+3,H-pad.bottom+28);
+  });
+  // Legend
+  ctx.fillStyle='#A8A29E';ctx.fillRect(pad.left,4,12,10);
+  ctx.fillStyle='#787774';ctx.font='10px sans-serif';ctx.textAlign='left';
+  ctx.fillText('去年',pad.left+16,13);
+  ctx.fillStyle='#346538';ctx.fillRect(pad.left+60,4,12,10);
+  ctx.fillStyle='#787774';
+  ctx.fillText('今年',pad.left+76,13);
+}
+
 function drawCatPie(canvasId,data){
   const canvas=document.getElementById(canvasId);if(!canvas)return;
   const ctx=canvas.getContext('2d');
   const W=canvas.width,H=canvas.height;
   ctx.clearRect(0,0,W,H);
   const total=data.reduce((s,d)=>s+d.value,0);
-  if(total<=0){ctx.fillStyle='#718096';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
+  if(total<=0){ctx.fillStyle='#787774';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('尚無資料',W/2,H/2);return;}
   const cx=110,cy=H/2,r=Math.min(cx,cy)-15;
   let angle=-Math.PI/2;
   data.forEach(d=>{
@@ -673,9 +748,9 @@ function drawCatPie(canvasId,data){
   data.forEach((d,i)=>{
     ctx.fillStyle=d.color;ctx.fillRect(lx,ly+i*26,12,12);
     const label=d.name.replace('\n','');
-    ctx.fillStyle='#1a202c';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillStyle='#2F3437';ctx.font='11px sans-serif';ctx.textAlign='left';
     ctx.fillText(label,lx+16,ly+i*26+10);
-    ctx.fillStyle='#718096';ctx.font='10px sans-serif';
+    ctx.fillStyle='#787774';ctx.font='10px sans-serif';
     ctx.fillText((d.value/total*100).toFixed(1)+'%  '+d.value.toFixed(1)+' 公噸',lx+16,ly+i*26+21);
   });
 }
@@ -692,12 +767,13 @@ function pageElec(){
 
   const rows=existing.map(r=>`
     <tr>
-      <td>${badge(r.site,'#185FA5')}</td>
+      <td>${badge(r.site,'#1F6C9F')}</td>
       <td style="font-family:monospace;font-size:12px">${esc(r.meter)}</td>
       <td style="font-weight:600">${numFmt(r.kwh)}</td>
-      <td style="color:#718096">${r.amount?numFmt(r.amount):'-'}</td>
-      <td style="font-size:12px;color:#718096">${esc(r.startDate||'')} ~ ${esc(r.endDate||'')}</td>
-      <td style="font-weight:600;color:#185FA5">${fmt(r.emission)}</td>
+      <td style="color:#787774">${r.amount?numFmt(r.amount):'-'}</td>
+      <td style="font-size:12px;color:#787774">${esc(r.startDate||'')} ~ ${esc(r.endDate||'')}</td>
+      <td style="font-weight:600;color:#1F6C9F">${fmt(r.emission)}</td>
+      <td style="font-size:11px;color:#787774">${esc(r.coeffVersion||coeffVersionLabel('electricity',currentYear))}</td>
       <td><button class="btn btn-danger" onclick="delElec('${r.id}')">刪除</button></td>
     </tr>`).join('');
 
@@ -707,8 +783,8 @@ function pageElec(){
       <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${monthSel(currentMonth,"setMonth(this.value)")}</div>
     </div>
     <div class="metric-grid" style="grid-template-columns:1fr 1fr">
-      ${metricCard('本月總用電量',totalKwh.toFixed(0),'度','#185FA5')}
-      ${metricCard('本月排放量',totalEmit.toFixed(4),'公噸 CO₂e','#185FA5')}
+      ${metricCard('本月總用電量',totalKwh.toFixed(0),'度','#1F6C9F')}
+      ${metricCard('本月排放量',totalEmit.toFixed(4),'公噸 CO₂e','#1F6C9F')}
     </div>
     <div class="card">
       <div class="section-title">新增帳單紀錄</div>
@@ -724,7 +800,7 @@ function pageElec(){
       <button class="btn btn-ghost" onclick="toggleImportBox()" style="margin-top:8px">📋 貼上 Excel 資料批次匯入</button>
       <div id="importBox" style="display:none;margin-top:12px">
         <div class="form-label" style="margin-bottom:6px">格式：場域、電號、度數、金額、起始日、結束日（Tab 或逗號分隔）</div>
-        <textarea id="importText" rows="4" style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;font-family:monospace" placeholder="汐止&#9;2935001313&#9;1073&#9;2678&#9;2025-01-01&#9;2025-03-01"></textarea>
+        <textarea id="importText" rows="4" style="width:100%;border:1px solid #EAEAEA;border-radius:8px;padding:10px;font-size:12px;font-family:monospace" placeholder="汐止&#9;2935001313&#9;1073&#9;2678&#9;2025-01-01&#9;2025-03-01"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
           <button class="btn btn-primary" onclick="batchImportElec()">確認匯入</button>
           <button class="btn btn-ghost" onclick="toggleImportBox()">取消</button>
@@ -735,7 +811,7 @@ function pageElec(){
       <div class="section-title">本月電力紀錄 (${existing.length} 筆)</div>
       ${existing.length===0?'<div class="empty">尚無紀錄，請填寫上方表單</div>':
       `<div style="overflow-x:auto"><table>
-        <thead><tr><th>場域</th><th>電號</th><th>度數</th><th>金額(元)</th><th>帳單期間</th><th>排放量 CO₂e</th><th></th></tr></thead>
+        <thead><tr><th>場域</th><th>電號</th><th>度數</th><th>金額(元)</th><th>帳單期間</th><th>排放量 CO₂e</th><th>採用係數版本</th><th></th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>`}
     </div>`;
@@ -755,8 +831,8 @@ function pageCat1(){
       <div class="header-controls">${yearSel(currentYear,"setYear(this.value)")}${monthSel(currentMonth,"setMonth(this.value)")}</div>
     </div>
     <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr">
-      ${metricCard('本月類別一總排放',cat1Total.toFixed(4),'公噸 CO₂e','#0F6E56')}
-      ${metricCard('冷媒逸散紀錄',(md.refrigerant||[]).length,'筆','#854F0B')}
+      ${metricCard('本月類別一總排放',cat1Total.toFixed(4),'公噸 CO₂e','#346538')}
+      ${metricCard('冷媒逸散紀錄',(md.refrigerant||[]).length,'筆','#956400')}
       ${metricCard('移動源紀錄',(md.fuel||[]).length,'筆','#993556')}
     </div>
     <div class="tabs">
@@ -775,11 +851,12 @@ function renderCat1Sub(){
   if(cat1Sub==='refrigerant'){
     const rows=(md.refrigerant||[]).map(r=>`
       <tr>
-        <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td>
+        <td>${badge(r.site,'#956400')}</td><td>${esc(r.device)}</td>
         <td style="font-size:12px">${esc(r.substance)}</td>
-        <td>${r.kg}</td><td style="color:#718096">${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td>
-        <td style="color:#718096">${r.leakRate}</td>
-        <td style="font-weight:600;color:#854F0B">${r.emission!=null?r.emission.toFixed(6):'N/A'}</td>
+        <td>${r.kg}</td><td style="color:#787774">${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td>
+        <td style="color:#787774">${r.leakRate}</td>
+        <td style="font-weight:600;color:#956400">${r.emission!=null?r.emission.toFixed(6):'N/A'}</td>
+        <td style="font-size:11px;color:#787774">${esc(r.coeffVersion||coeffVersionLabel('refrigerants'))}</td>
         <td><button class="btn btn-danger" onclick="delCat1('refrigerant','${r.id}')">刪除</button></td>
       </tr>`).join('');
     el.innerHTML=`
@@ -799,7 +876,7 @@ function renderCat1Sub(){
       <div class="card">
         <div class="section-title">冷媒逸散紀錄 (${(md.refrigerant||[]).length} 筆)</div>
         ${(md.refrigerant||[]).length===0?'<div class="empty">尚無紀錄</div>':
-        `<table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+        `<table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th><th>排放量 CO₂e</th><th>採用係數版本</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
       </div>`;
   }
   else if(cat1Sub==='fuel'){
@@ -808,9 +885,10 @@ function renderCat1Sub(){
         <td>${badge(r.site,'#993556')}</td><td>${esc(r.vehicle)}</td>
         <td style="font-size:12px">${esc(r.fuelType)}</td>
         <td>NT$${numFmt(r.amount)}</td>
-        <td style="color:#718096">${r.pricePerLiter}</td>
-        <td style="color:#718096">${r.pricePerLiter?(r.amount/r.pricePerLiter).toFixed(1)+' L':'-'}</td>
+        <td style="color:#787774">${r.pricePerLiter}</td>
+        <td style="color:#787774">${r.pricePerLiter?(r.amount/r.pricePerLiter).toFixed(1)+' L':'-'}</td>
         <td style="font-weight:600;color:#993556">${fmt(r.emission,6)}</td>
+        <td style="font-size:11px;color:#787774">${esc(r.coeffVersion||coeffVersionLabel('fuel'))}</td>
         <td><button class="btn btn-danger" onclick="delCat1('fuel','${r.id}')">刪除</button></td>
       </tr>`).join('');
     el.innerHTML=`
@@ -824,21 +902,22 @@ function renderCat1Sub(){
           <div class="form-group"><div class="form-label">油價(元/公升)</div><input id="ff-price" type="number" placeholder="30.8" style="width:100px"></div>
           <div class="form-group" style="justify-content:flex-end"><button class="btn btn-primary" onclick="addFuelRec()">新增</button></div>
         </div>
-        <div style="font-size:12px;color:#718096;margin-top:8px">💡 系統自動算公升數 = 金額 ÷ 油價，再乘排放係數</div>
+        <div style="font-size:12px;color:#787774;margin-top:8px">💡 系統自動算公升數 = 金額 ÷ 油價，再乘排放係數</div>
       </div>
       <div class="card">
         <div class="section-title">移動源紀錄 (${(md.fuel||[]).length} 筆)</div>
         ${(md.fuel||[]).length===0?'<div class="empty">尚無紀錄</div>':
-        `<table><thead><tr><th>場域</th><th>車輛</th><th>油種</th><th>加油金額</th><th>油價/公升</th><th>估計公升</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+        `<table><thead><tr><th>場域</th><th>車輛</th><th>油種</th><th>加油金額</th><th>油價/公升</th><th>估計公升</th><th>排放量 CO₂e</th><th>採用係數版本</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
       </div>`;
   }
   else{
     const rows=(md.septicTank||[]).map(r=>`
       <tr>
-        <td>${badge(r.site,'#533AB7')}</td>
+        <td>${badge(r.site,'#6B4FA0')}</td>
         <td>${r.male}</td><td>${r.female}</td>
         <td>${r.workDays}</td><td>${r.hoursPerDay}</td>
-        <td style="font-weight:600;color:#533AB7">${fmt(r.emission,6)}</td>
+        <td style="font-weight:600;color:#6B4FA0">${fmt(r.emission,6)}</td>
+        <td style="font-size:11px;color:#787774">${esc(r.coeffVersion||coeffVersionLabel('septicTank'))}</td>
         <td><button class="btn btn-danger" onclick="delCat1('septicTank','${r.id}')">刪除</button></td>
       </tr>`).join('');
     el.innerHTML=`
@@ -856,7 +935,7 @@ function renderCat1Sub(){
       <div class="card">
         <div class="section-title">化糞池紀錄 (${(md.septicTank||[]).length} 筆)</div>
         ${(md.septicTank||[]).length===0?'<div class="empty">尚無紀錄</div>':
-        `<table><thead><tr><th>場域</th><th>男</th><th>女</th><th>工作天</th><th>工時/天</th><th>排放量 CO₂e</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+        `<table><thead><tr><th>場域</th><th>男</th><th>女</th><th>工作天</th><th>工時/天</th><th>排放量 CO₂e</th><th>採用係數版本</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
       </div>`;
   }
 }
@@ -881,8 +960,8 @@ function renderCoeffSub(){
     const rows=COEFF.electricity.map((e,i)=>`
       <tr>
         <td style="font-weight:600">${e.year}</td>
-        <td><input type="number" value="${e.factor}" step="0.001" style="width:90px;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:13px" onchange="updateElecFactor(${i},this.value)"></td>
-        <td style="color:#718096">${esc(e.note||'')}</td>
+        <td><input type="number" value="${e.factor}" step="0.001" style="width:90px;border:1px solid #EAEAEA;border-radius:6px;padding:4px 8px;font-size:13px" onchange="updateElecFactor(${i},this.value)"></td>
+        <td style="color:#787774">${esc(e.note||'')}</td>
         <td><button class="btn btn-danger" onclick="delElecRow(${i})">刪除</button></td>
       </tr>`).join('');
     el.innerHTML=`
@@ -895,10 +974,10 @@ function renderCoeffSub(){
           <thead><tr><th>年度</th><th>排放係數</th><th>備註</th><th></th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #e2e8f0">
-          <input id="ne-yr" type="number" value="2026" style="width:80px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
-          <input id="ne-fac" type="number" placeholder="係數值" style="width:100px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
-          <input id="ne-note" placeholder="備註" style="flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #EAEAEA">
+          <input id="ne-yr" type="number" value="2026" style="width:80px;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="ne-fac" type="number" placeholder="係數值" style="width:100px;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="ne-note" placeholder="備註" style="flex:1;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
           <button class="btn btn-primary" onclick="addElecRow()">新增年度</button>
         </div>
       </div>`;
@@ -907,8 +986,8 @@ function renderCoeffSub(){
     const rows=COEFF.refrigerants.map((r,i)=>`
       <tr>
         <td style="font-weight:500">${esc(r.name)}</td>
-        <td>${r.gwp!=null?`<span class="badge" style="background:#854F0B18;color:#854F0B;border:1px solid #854F0B30">${r.gwp}</span>`:'<span class="badge-pending">未公告</span>'}</td>
-        <td style="color:#718096">${r.ar||'-'}</td>
+        <td>${r.gwp!=null?`<span class="badge" style="background:#95640018;color:#956400;border:1px solid #95640030">${r.gwp}</span>`:'<span class="badge-pending">未公告</span>'}</td>
+        <td style="color:#787774">${r.ar||'-'}</td>
         <td><button class="btn btn-danger" onclick="delRefrigRow(${i})">刪除</button></td>
       </tr>`).join('');
     el.innerHTML=`
@@ -918,13 +997,14 @@ function renderCoeffSub(){
           <thead><tr><th>冷媒名稱</th><th>GWP 值</th><th>AR 版本</th><th></th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #e2e8f0">
-          <input id="nr-name" placeholder="冷媒名稱" style="flex:2;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
-          <input id="nr-gwp" type="number" placeholder="GWP 值" style="width:100px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
-          <input id="nr-ar" placeholder="AR6" style="width:70px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px">
+        <div style="display:flex;gap:8px;align-items:center;padding-top:12px;border-top:1px solid #EAEAEA">
+          <input id="nr-name" placeholder="冷媒名稱" style="flex:2;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="nr-gwp" type="number" placeholder="GWP 值" style="width:100px;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
+          <input id="nr-ar" placeholder="AR6" style="width:70px;border:1px solid #EAEAEA;border-radius:8px;padding:7px 10px;font-size:13px">
           <button class="btn btn-primary" onclick="addRefrigRow()">新增</button>
         </div>
-      </div>`;
+      </div>
+      ${coeffVersionBox('refrigerants')}`;
   }
   else if(coeffSub==='fuel'){
     const f=COEFF.fuel.gasoline92;
@@ -934,9 +1014,10 @@ function renderCoeffSub(){
         ${fields.map(([k,label])=>`
           <div>
             <div class="form-label" style="margin-bottom:6px">${label}</div>
-            <input type="number" step="0.000001" value="${f[k]}" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateFuelCoeff('${k}',this.value)">
+            <input type="number" step="0.000001" value="${f[k]}" style="border:1px solid #EAEAEA;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateFuelCoeff('${k}',this.value)">
           </div>`).join('')}
-      </div></div>`;
+      </div></div>
+      ${coeffVersionBox('fuel')}`;
   }
   else{
     const cfg=COEFF.septicTank;
@@ -946,16 +1027,33 @@ function renderCoeffSub(){
         ${fields.map(([k,label])=>`
           <div>
             <div class="form-label" style="margin-bottom:6px">${label}</div>
-            <input type="number" step="0.000001" value="${cfg[k]}" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateSepticCoeff('${k}',this.value)">
+            <input type="number" step="0.000001" value="${cfg[k]}" style="border:1px solid #EAEAEA;border-radius:8px;padding:8px 10px;font-size:13px;width:100%" onchange="updateSepticCoeff('${k}',this.value)">
           </div>`).join('')}
       </div>
       <div class="info-box">
         <strong>計算公式：</strong>人時 = 總人數 × 每日工時 × 工作天數<br>
         排放量 = (人時 ÷ 每日工時 × BOD/人日) × Bo × MCF × GWP(CH₄)
       </div>
-    </div>`;
+    </div>
+    ${coeffVersionBox('septicTank')}`;
   }
 }
+
+// 排放係數資料庫版本管理：顯示/編輯版本來源與更新日期，供查證單位追溯
+function coeffVersionBox(type){
+  const m=COEFF.meta[type];
+  return`<div class="card">
+    <div class="section-title">排放係數資料庫版本管理</div>
+    <div class="form-row">
+      <div class="form-group flex1"><div class="form-label">係數版本／來源</div>
+        <input value="${esc(m.version)}" ${window.isAdmin&&window.isAdmin()?'':'disabled'} onchange="updateCoeffMeta('${type}','version',this.value)"></div>
+      <div class="form-group"><div class="form-label">更新日期</div>
+        <input type="date" value="${esc(m.updatedAt)}" style="width:150px" ${window.isAdmin&&window.isAdmin()?'':'disabled'} onchange="updateCoeffMeta('${type}','updatedAt',this.value)"></div>
+    </div>
+    <div style="font-size:12px;color:#787774">每次新增紀錄時，系統會自動記下當下採用的係數版本，供日後查證單位追溯。</div>
+  </div>`;
+}
+function updateCoeffMeta(type,field,value){COEFF.meta[type][field]=value;saveCoeff(COEFF);renderCoeffSub();toast('已更新係數版本資訊');}
 
 // ── Report ──
 function pageReport(){
@@ -975,7 +1073,7 @@ function pageReport(){
       <td style="color:${color}">${tw_val.toFixed(4)}</td>
       <td style="color:${color}">${xm_val.toFixed(4)}</td>
       <td style="font-weight:700">${total.toFixed(4)}</td>
-      <td style="color:#718096;font-size:12px">${grandTotal>0?(total/grandTotal*100).toFixed(2)+'%':'—'}</td>
+      <td style="color:#787774;font-size:12px">${grandTotal>0?(total/grandTotal*100).toFixed(2)+'%':'—'}</td>
     </tr>`;
   };
 
@@ -993,9 +1091,9 @@ function pageReport(){
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div style="font-weight:700;font-size:16px">公信電子股份有限公司</div>
-        <div style="font-size:13px;color:#718096">${year} 年度溫室氣體排放盤查彙整表</div>
+        <div style="font-size:13px;color:#787774">${year} 年度溫室氣體排放盤查彙整表</div>
       </div>
-      <div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#718096;flex-wrap:wrap">
+      <div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#787774;flex-wrap:wrap">
         <span>盤查邊界：台灣（汐止+南港）、廈門廠</span>
         <span>盤查期間：${year}/01/01 ~ ${year}/12/31</span>
         <span>盤查依據：ISO 14064-1：2018</span>
@@ -1004,7 +1102,7 @@ function pageReport(){
 
       <table>
         <thead>
-          <tr style="background:#0d2d20">
+          <tr style="background:#2F3437">
             <th style="color:#fff;padding:9px 12px">排放類別</th>
             <th style="color:#fff;padding:9px 12px">台灣廠 (公噸CO₂e)</th>
             <th style="color:#fff;padding:9px 12px">廈門廠 (公噸CO₂e)</th>
@@ -1013,51 +1111,51 @@ function pageReport(){
           </tr>
         </thead>
         <tbody>
-          ${catRow('類別一：直接排放',tw.cat1.total,xm.cat1.total,'#0F6E56')}
+          ${catRow('類別一：直接排放（GHG Protocol Scope 1）',tw.cat1.total,xm.cat1.total,'#346538')}
           <tr style="background:#f9f9f9">
-            <td style="font-size:12px;color:#718096;padding-left:20px">└ 移動源（公務車汽油）</td>
-            <td style="font-size:12px;color:#718096">51.7784</td>
-            <td style="font-size:12px;color:#718096">1.4088</td>
-            <td style="font-size:12px;color:#718096">53.1872</td>
+            <td style="font-size:12px;color:#787774;padding-left:20px">└ 移動源（公務車汽油）</td>
+            <td style="font-size:12px;color:#787774">51.7784</td>
+            <td style="font-size:12px;color:#787774">1.4088</td>
+            <td style="font-size:12px;color:#787774">53.1872</td>
             <td></td>
           </tr>
           <tr style="background:#f9f9f9">
-            <td style="font-size:12px;color:#718096;padding-left:20px">└ 逸散源（冷媒）</td>
-            <td style="font-size:12px;color:#718096">139.5242</td>
-            <td style="font-size:12px;color:#718096">29.6254</td>
-            <td style="font-size:12px;color:#718096">169.1496</td>
+            <td style="font-size:12px;color:#787774;padding-left:20px">└ 逸散源（冷媒）</td>
+            <td style="font-size:12px;color:#787774">139.5242</td>
+            <td style="font-size:12px;color:#787774">29.6254</td>
+            <td style="font-size:12px;color:#787774">169.1496</td>
             <td></td>
           </tr>
-          ${catRow('類別二：外購電力',tw.cat2.total,xm.cat2.total,'#185FA5')}
+          ${catRow('類別二：外購電力（GHG Protocol Scope 2）',tw.cat2.total,xm.cat2.total,'#1F6C9F')}
           <tr style="background:#f9f9f9">
-            <td style="font-size:12px;color:#718096;padding-left:20px">└ 用電量（千度）</td>
-            <td style="font-size:12px;color:#718096">404,066 度</td>
-            <td style="font-size:12px;color:#718096">963,412 度</td>
-            <td style="font-size:12px;color:#718096">1,367,478 度</td>
+            <td style="font-size:12px;color:#787774;padding-left:20px">└ 用電量（千度）</td>
+            <td style="font-size:12px;color:#787774">404,066 度</td>
+            <td style="font-size:12px;color:#787774">963,412 度</td>
+            <td style="font-size:12px;color:#787774">1,367,478 度</td>
             <td></td>
           </tr>
-          ${catRow('類別三：員工通勤',tw.cat3.total,xm.cat3.total,'#854F0B')}
-          ${catRow('類別四：間接排放',tw.cat4.total,xm.cat4.total,'#533AB7')}
+          ${catRow('類別三：員工通勤（GHG Protocol Scope 3）',tw.cat3.total,xm.cat3.total,'#956400')}
+          ${catRow('類別四：間接排放（GHG Protocol Scope 3）',tw.cat4.total,xm.cat4.total,'#6B4FA0')}
           <tr style="background:#f9f9f9">
-            <td style="font-size:12px;color:#718096;padding-left:20px">└ 廢棄物處理與運輸</td>
-            <td style="font-size:12px;color:#718096">7.4681</td>
-            <td style="font-size:12px;color:#718096">26.9200</td>
-            <td style="font-size:12px;color:#718096">34.3881</td>
+            <td style="font-size:12px;color:#787774;padding-left:20px">└ 廢棄物處理與運輸</td>
+            <td style="font-size:12px;color:#787774">7.4681</td>
+            <td style="font-size:12px;color:#787774">26.9200</td>
+            <td style="font-size:12px;color:#787774">34.3881</td>
             <td></td>
           </tr>
           <tr style="background:#f9f9f9">
-            <td style="font-size:12px;color:#718096;padding-left:20px">└ 燃料和能源相關前段排放</td>
-            <td style="font-size:12px;color:#718096">569.1119</td>
-            <td style="font-size:12px;color:#718096">3,397.5468</td>
-            <td style="font-size:12px;color:#718096">3,966.6587</td>
+            <td style="font-size:12px;color:#787774;padding-left:20px">└ 燃料和能源相關前段排放</td>
+            <td style="font-size:12px;color:#787774">569.1119</td>
+            <td style="font-size:12px;color:#787774">3,397.5468</td>
+            <td style="font-size:12px;color:#787774">3,966.6587</td>
             <td></td>
           </tr>
-          <tr style="background:#e8f5e9;border-top:2px solid #0F6E56">
+          <tr style="background:#EDF3EC;border-top:2px solid #346538">
             <td style="font-weight:700;padding:10px 12px">年度合計</td>
-            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${twTotal.toFixed(4)}</td>
-            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">${xmTotal.toFixed(4)}</td>
+            <td style="font-weight:700;color:#346538;padding:10px 12px">${twTotal.toFixed(4)}</td>
+            <td style="font-weight:700;color:#346538;padding:10px 12px">${xmTotal.toFixed(4)}</td>
             <td style="font-weight:700;padding:10px 12px">${grandTotal.toFixed(4)}</td>
-            <td style="font-weight:700;color:#0F6E56;padding:10px 12px">100%</td>
+            <td style="font-weight:700;color:#346538;padding:10px 12px">100%</td>
           </tr>
         </tbody>
       </table>
@@ -1080,7 +1178,7 @@ function pageReport(){
             <td>4,272.57</td><td>3.5320</td><td>0.0406</td><td>26.1981</td>
             <td style="font-weight:700">${xmTotal.toFixed(2)}</td>
           </tr>
-          <tr style="background:#e8f5e9;font-weight:700">
+          <tr style="background:#EDF3EC;font-weight:700">
             <td>全公司合計</td>
             <td>5,747.30</td><td>4.0343</td><td>1.5967</td><td>52.8173</td>
             <td>${grandTotal.toFixed(2)}</td>
@@ -1097,14 +1195,14 @@ function exportCSV(){
   if(!S){toast('無資料可匯出','error');return;}
   const tw=S.TW,xm=S.XM;
   const rows=[
-    ['排放類別','台灣廠(公噸CO₂e)','廈門廠(公噸CO₂e)','合計(公噸CO₂e)','占比(%)'],
+    ['排放類別','GHG Protocol 範疇','台灣廠(公噸CO₂e)','廈門廠(公噸CO₂e)','合計(公噸CO₂e)','占比(%)'],
   ];
   const grand=tw.cat1.total+tw.cat2.total+tw.cat3.total+tw.cat4.total+xm.cat1.total+xm.cat2.total+xm.cat3.total+xm.cat4.total;
-  [['類別一 直接排放','cat1'],['類別二 外購電力','cat2'],['類別三 員工通勤','cat3'],['類別四 間接排放','cat4']].forEach(([label,key])=>{
+  [['類別一 直接排放','cat1','Scope 1'],['類別二 外購電力','cat2','Scope 2'],['類別三 員工通勤','cat3','Scope 3'],['類別四 間接排放','cat4','Scope 3']].forEach(([label,key,scope])=>{
     const t=+(tw[key].total+xm[key].total).toFixed(4);
-    rows.push([label,tw[key].total.toFixed(4),xm[key].total.toFixed(4),t.toFixed(4),(t/grand*100).toFixed(2)+'%']);
+    rows.push([label,scope,tw[key].total.toFixed(4),xm[key].total.toFixed(4),t.toFixed(4),(t/grand*100).toFixed(2)+'%']);
   });
-  rows.push(['合計',
+  rows.push(['合計','',
     (tw.cat1.total+tw.cat2.total+tw.cat3.total+tw.cat4.total).toFixed(4),
     (xm.cat1.total+xm.cat2.total+xm.cat3.total+xm.cat4.total).toFixed(4),
     grand.toFixed(4),'100%']);
@@ -1132,29 +1230,29 @@ function renderImportStep(step){
         <div class="import-card${importFileType==='elec'?' selected':''}" onclick="setImportType('elec')">
           <div style="font-size:22px;margin-bottom:10px">⚡</div>
           <div style="font-weight:700;font-size:15px;margin-bottom:6px">類別二：外購電力</div>
-          <div style="font-size:12px;color:#718096;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別二-外購電力碳排計算.xlsx</div>
-          <div style="font-size:13px;color:#718096">解析各場域工作表的電號、度數、金額、帳單日期</div>
+          <div style="font-size:12px;color:#787774;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別二-外購電力碳排計算.xlsx</div>
+          <div style="font-size:13px;color:#787774">解析各場域工作表的電號、度數、金額、帳單日期</div>
         </div>
         <div class="import-card${importFileType==='cat1'?' selected':''}" onclick="setImportType('cat1')">
           <div style="font-size:22px;margin-bottom:10px">🏭</div>
           <div style="font-weight:700;font-size:15px;margin-bottom:6px">類別一：直接排放</div>
-          <div style="font-size:12px;color:#718096;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別一-直接排放碳排計算.xlsx</div>
-          <div style="font-size:13px;color:#718096">解析冷媒逸散源、移動源（加油）、化糞池三個工作表</div>
+          <div style="font-size:12px;color:#787774;font-family:monospace;background:#f5f5f5;border-radius:6px;padding:4px 8px;margin-bottom:10px">2025類別一-直接排放碳排計算.xlsx</div>
+          <div style="font-size:13px;color:#787774">解析冷媒逸散源、移動源（加油）、化糞池三個工作表</div>
         </div>
       </div>
       ${importFileType?`
       <div class="card">
         <div class="section-title">上傳設定</div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <div style="font-size:13px;color:#718096">資料年度：</div>
+          <div style="font-size:13px;color:#787774">資料年度：</div>
           ${yearSel(importYear,"setImportYear(this.value)")}
-          <div style="font-size:12px;color:#718096">（用於對應排放係數）</div>
+          <div style="font-size:12px;color:#787774">（用於對應排放係數）</div>
         </div>
-        <label style="display:inline-flex;align-items:center;gap:10px;background:#0F6E56;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer;font-size:13px;font-weight:500">
+        <label style="display:inline-flex;align-items:center;gap:10px;background:#346538;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer;font-size:13px;font-weight:500">
           📂 選擇 Excel 檔案（.xlsx）
           <input type="file" accept=".xlsx,.xls" onchange="handleXlsxFile(this)" style="display:none">
         </label>
-        <div id="import-status" style="margin-top:12px;font-size:13px;color:#718096"></div>
+        <div id="import-status" style="margin-top:12px;font-size:13px;color:#787774"></div>
       </div>`:''}`;
   }
   else if(step==='preview'&&importPreview){
@@ -1163,13 +1261,13 @@ function renderImportStep(step){
       const rows=importPreview.rows.map((r,i)=>`
         <tr style="background:${i%2===0?'#fafafa':'#fff'}">
           <td style="font-weight:600">${r.month} 月</td>
-          <td>${badge(r.site,'#185FA5')}</td>
+          <td>${badge(r.site,'#1F6C9F')}</td>
           <td style="font-family:monospace;font-size:12px">${esc(r.meter)}</td>
           <td style="font-weight:600">${numFmt(r.kwh)}</td>
-          <td style="color:#718096">${r.amount>0?numFmt(r.amount):'—'}</td>
-          <td style="color:#718096;font-size:12px">${esc(r.startDate||'—')}</td>
-          <td style="color:#718096;font-size:12px">${esc(r.endDate||'—')}</td>
-          <td style="color:#185FA5;font-weight:600">${(r.kwh*getElecFactor(importYear)/1000).toFixed(4)}</td>
+          <td style="color:#787774">${r.amount>0?numFmt(r.amount):'—'}</td>
+          <td style="color:#787774;font-size:12px">${esc(r.startDate||'—')}</td>
+          <td style="color:#787774;font-size:12px">${esc(r.endDate||'—')}</td>
+          <td style="color:#1F6C9F;font-weight:600">${(r.kwh*getElecFactor(importYear)/1000).toFixed(4)}</td>
         </tr>`).join('');
       previewHtml=`<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
@@ -1186,8 +1284,8 @@ function renderImportStep(step){
           <div class="section-title">冷媒逸散源（${importPreview.refrigerant.length} 筆）— 存入第 1 月</div>
           <table><thead><tr><th>場域</th><th>設備</th><th>冷媒</th><th>充填量(kg)</th><th>GWP</th><th>逸散率</th></tr></thead>
           <tbody>${importPreview.refrigerant.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
-            <td>${badge(r.site,'#854F0B')}</td><td>${esc(r.device)}</td><td>${esc(r.substance)}</td>
-            <td>${r.kg}</td><td>${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td><td style="color:#718096">${r.leakRate}</td></tr>`).join('')}
+            <td>${badge(r.site,'#956400')}</td><td>${esc(r.device)}</td><td>${esc(r.substance)}</td>
+            <td>${r.kg}</td><td>${( r.gwp !== null && r.gwp !== undefined ? r.gwp : '未公告' )}</td><td style="color:#787774">${r.leakRate}</td></tr>`).join('')}
           </tbody></table></div>`;
       }
       if(importPreview.fuel.length){
@@ -1196,7 +1294,7 @@ function renderImportStep(step){
           <table><thead><tr><th>月份</th><th>車輛</th><th>油種</th><th>加油金額</th><th>油價/L</th></tr></thead>
           <tbody>${importPreview.fuel.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
             <td style="font-weight:600">${r.month} 月</td><td>${esc(r.vehicle)}</td><td>${esc(r.fuelType)}</td>
-            <td>NT$${numFmt(r.amount)}</td><td style="color:#718096">${r.pricePerLiter>0?r.pricePerLiter:'未填'}</td></tr>`).join('')}
+            <td>NT$${numFmt(r.amount)}</td><td style="color:#787774">${r.pricePerLiter>0?r.pricePerLiter:'未填'}</td></tr>`).join('')}
           </tbody></table></div>`;
       }
       if(importPreview.septic.length){
@@ -1204,8 +1302,8 @@ function renderImportStep(step){
           <div class="section-title">化糞池（${importPreview.septic.length} 筆）</div>
           <table><thead><tr><th>月份</th><th>場域</th><th>男</th><th>女</th><th>工作天</th><th>工時</th></tr></thead>
           <tbody>${importPreview.septic.map((r,i)=>`<tr style="background:${i%2===0?'#fafafa':'#fff'}">
-            <td style="font-weight:600">${r.month} 月</td><td>${badge(r.site,'#533AB7')}</td>
-            <td>${r.male}</td><td>${r.female}</td><td>${r.workDays}</td><td style="color:#718096">${r.hoursPerDay}</td></tr>`).join('')}
+            <td style="font-weight:600">${r.month} 月</td><td>${badge(r.site,'#6B4FA0')}</td>
+            <td>${r.male}</td><td>${r.female}</td><td>${r.workDays}</td><td style="color:#787774">${r.hoursPerDay}</td></tr>`).join('')}
           </tbody></table></div>`;
       }
       previewHtml+=`<div style="display:flex;gap:8px">
@@ -1218,7 +1316,7 @@ function renderImportStep(step){
     el.innerHTML=`<div class="card"><div style="text-align:center;padding:40px 0">
       <div style="font-size:48px;margin-bottom:16px">✅</div>
       <div style="font-size:18px;font-weight:700;margin-bottom:8px">匯入完成</div>
-      <div style="font-size:13px;color:#718096;margin-bottom:24px">資料已寫入 ${importYear} 年，請前往儀表板查看</div>
+      <div style="font-size:13px;color:#787774;margin-bottom:24px">資料已寫入 ${importYear} 年，請前往儀表板查看</div>
       <button class="btn btn-primary" onclick="resetImport()">繼續匯入另一份</button>
     </div></div>`;
   }
@@ -1256,7 +1354,7 @@ function addElec(){
     amount:parseFloat(( document.getElementById('ef-amt') ? document.getElementById('ef-amt').value : '' ))||0,
     startDate:( document.getElementById('ef-s') ? document.getElementById('ef-s').value : '' )||'',
     endDate:( document.getElementById('ef-e') ? document.getElementById('ef-e').value : '' )||'',
-    emission:calcElec(kwh,currentYear)
+    emission:calcElec(kwh,currentYear),coeffVersion:coeffVersionLabel('electricity',currentYear)
   });
   saveRec(REC);toast('已新增電力紀錄');pageElec();
 }
@@ -1293,7 +1391,7 @@ function addRefrig(){
   ensurePath(yr,mo);
   const gwp=parseFloat(( document.getElementById('rf-gwp') ? document.getElementById('rf-gwp').value : '' ))||null;
   const leakRate=parseFloat(( document.getElementById('rf-lr') ? document.getElementById('rf-lr').value : '' ))||0.003;
-  REC[yr][mo].refrigerant.push({id:Date.now().toString(),site:document.getElementById('rf-site').value,device:( document.getElementById('rf-dev') ? document.getElementById('rf-dev').value : '' )||'',substance:( document.getElementById('rf-sub') ? document.getElementById('rf-sub').value : '' )||'',kg,gwp,leakRate,emission:calcRefrig(kg,leakRate,gwp)});
+  REC[yr][mo].refrigerant.push({id:Date.now().toString(),site:document.getElementById('rf-site').value,device:( document.getElementById('rf-dev') ? document.getElementById('rf-dev').value : '' )||'',substance:( document.getElementById('rf-sub') ? document.getElementById('rf-sub').value : '' )||'',kg,gwp,leakRate,emission:calcRefrig(kg,leakRate,gwp),coeffVersion:coeffVersionLabel('refrigerants')});
   saveRec(REC);toast('已新增冷媒紀錄');renderCat1Sub();
 }
 function addFuelRec(){
@@ -1302,7 +1400,7 @@ function addFuelRec(){
   if(!amt||!price)return;
   const yr=String(currentYear),mo=String(currentMonth);
   ensurePath(yr,mo);
-  REC[yr][mo].fuel.push({id:Date.now().toString(),site:document.getElementById('ff-site').value,vehicle:( document.getElementById('ff-veh') ? document.getElementById('ff-veh').value : '' )||'',fuelType:( document.getElementById('ff-ft') ? document.getElementById('ff-ft').value : '車用汽油(92)' )||'車用汽油(92)',amount:amt,pricePerLiter:price,emission:calcFuel(amt,price)});
+  REC[yr][mo].fuel.push({id:Date.now().toString(),site:document.getElementById('ff-site').value,vehicle:( document.getElementById('ff-veh') ? document.getElementById('ff-veh').value : '' )||'',fuelType:( document.getElementById('ff-ft') ? document.getElementById('ff-ft').value : '車用汽油(92)' )||'車用汽油(92)',amount:amt,pricePerLiter:price,emission:calcFuel(amt,price),coeffVersion:coeffVersionLabel('fuel')});
   saveRec(REC);toast('已新增移動源紀錄');renderCat1Sub();
 }
 function addSepticRec(){
@@ -1313,7 +1411,7 @@ function addSepticRec(){
   ensurePath(yr,mo);
   const female=parseInt(( document.getElementById('sf-f') ? document.getElementById('sf-f').value : '' ))||0;
   const hoursPerDay=parseInt(( document.getElementById('sf-h') ? document.getElementById('sf-h').value : '' ))||8;
-  REC[yr][mo].septicTank.push({id:Date.now().toString(),site:document.getElementById('sf-site').value,male,female,workDays,hoursPerDay,emission:calcSeptic(male,female,workDays,hoursPerDay)});
+  REC[yr][mo].septicTank.push({id:Date.now().toString(),site:document.getElementById('sf-site').value,male,female,workDays,hoursPerDay,emission:calcSeptic(male,female,workDays,hoursPerDay),coeffVersion:coeffVersionLabel('septicTank')});
   saveRec(REC);toast('已新增化糞池紀錄');renderCat1Sub();
 }
 function delCat1(type,id){
@@ -1367,7 +1465,7 @@ function handleXlsxFile(input){
   const status=document.getElementById('import-status');
   if(status)status.textContent='解析中⋯';
   if(typeof XLSX==='undefined'){
-    if(status)status.innerHTML='<span style="color:#C53030">⚠️ 請連接網路後重新開啟，XLSX 解析套件需要網路載入一次</span>';
+    if(status)status.innerHTML='<span style="color:#AF4040">⚠️ 請連接網路後重新開啟，XLSX 解析套件需要網路載入一次</span>';
     return;
   }
   const reader=new FileReader();
@@ -1377,7 +1475,7 @@ function handleXlsxFile(input){
       if(importFileType==='elec')parseElecXlsx(wb);
       else parseCat1Xlsx(wb);
     }catch(err){
-      if(status)status.innerHTML=`<span style="color:#C53030">⚠️ 解析失敗：${esc(err.message)}</span>`;
+      if(status)status.innerHTML=`<span style="color:#AF4040">⚠️ 解析失敗：${esc(err.message)}</span>`;
     }
   };
   reader.readAsArrayBuffer(file);
@@ -1410,7 +1508,7 @@ function parseElecXlsx(wb){
       rows.push({id:`imp_e_${Date.now()}_${ri}`,site,meter,kwh,amount:parseFloat(row[6])||0,startDate,endDate,month:dateToMonth(startDate)||1,emission:null});
     });
   });
-  if(!rows.length){document.getElementById('import-status').innerHTML='<span style="color:#C53030">⚠️ 未找到有效電力帳單資料</span>';return;}
+  if(!rows.length){document.getElementById('import-status').innerHTML='<span style="color:#AF4040">⚠️ 未找到有效電力帳單資料</span>';return;}
   importPreview={type:'elec',rows};
   renderImportStep('preview');
 }
@@ -1450,7 +1548,7 @@ function parseCat1Xlsx(wb){
     }
   });
   if(!result.refrigerant.length&&!result.fuel.length&&!result.septic.length){
-    document.getElementById('import-status').innerHTML='<span style="color:#C53030">⚠️ 未找到有效資料，請確認是類別一直接排放檔案</span>';return;
+    document.getElementById('import-status').innerHTML='<span style="color:#AF4040">⚠️ 未找到有效資料，請確認是類別一直接排放檔案</span>';return;
   }
   importPreview=Object.assign({type:'cat1'},result);
   renderImportStep('preview');
@@ -1513,9 +1611,9 @@ function pageScan(){
     </div>
 
     <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr">
-      ${metricCard('已掃描帳單',total,'份','#0F6E56')}
-      ${metricCard('待確認',pending,'份','#854F0B')}
-      ${metricCard('已匯入',done,'份','#185FA5')}
+      ${metricCard('已掃描帳單',total,'份','#346538')}
+      ${metricCard('待確認',pending,'份','#956400')}
+      ${metricCard('已匯入',done,'份','#1F6C9F')}
     </div>
 
     <!-- API Key 設定 -->
@@ -1531,22 +1629,22 @@ function pageScan(){
           <button class="btn btn-primary" onclick="testApiKey()">測試連線</button>
         </div>
       </div>
-      <div id="apiStatus" style="margin-top:8px;font-size:12px;color:#718096"></div>
+      <div id="apiStatus" style="margin-top:8px;font-size:12px;color:#787774"></div>
     </div>
 
     <!-- 上傳區 -->
     <div class="card" style="margin-bottom:16px">
       <div class="section-title">上傳帳單</div>
-      <div id="dropZone" onclick="document.getElementById('billFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#0F6E56'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="handleDrop(event)"
-        style="border:2px dashed #e2e8f0;border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px">
+      <div id="dropZone" onclick="document.getElementById('billFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#346538'" ondragleave="this.style.borderColor='#EAEAEA'" ondrop="handleDrop(event)"
+        style="border:2px dashed #EAEAEA;border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px">
         <div style="font-size:36px;margin-bottom:10px">📄</div>
         <div style="font-size:15px;font-weight:600;margin-bottom:6px">點擊或拖曳上傳帳單</div>
-        <div style="font-size:13px;color:#718096">支援 JPG、PNG、PDF（PDF 僅讀第一頁）<br>可一次選取多份帳單</div>
+        <div style="font-size:13px;color:#787774">支援 JPG、PNG、PDF（PDF 僅讀第一頁）<br>可一次選取多份帳單</div>
         <input id="billFileInput" type="file" accept="image/*,.pdf" multiple onchange="handleFiles(this.files)" style="display:none">
       </div>
       <div style="display:flex;gap:12px;align-items:center">
         <div class="form-label" style="white-space:nowrap">帳單類型：</div>
-        <select id="scanBillType" style="width:160px;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px">
+        <select id="scanBillType" style="width:160px;border:1px solid #EAEAEA;border-radius:8px;padding:6px 10px;font-size:13px">
           <option value="auto">自動判斷</option>
           <option value="electricity">電費單</option>
           <option value="water">水費單</option>
@@ -1593,18 +1691,18 @@ function renderBillList(){
 }
 
 function renderBillCard(b,editable){
-  const imgHtml=b.imageBase64?`<img src="${b.imageBase64}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer" onclick="previewImg('${b.id}')" title="點擊放大">`:'<div style="width:120px;height:90px;border-radius:8px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:24px;background:#f8f9fb">📄</div>';
+  const imgHtml=b.imageBase64?`<img src="${b.imageBase64}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #EAEAEA;cursor:pointer" onclick="previewImg('${b.id}')" title="點擊放大">`:'<div style="width:120px;height:90px;border-radius:8px;border:1px solid #EAEAEA;display:flex;align-items:center;justify-content:center;font-size:24px;background:#f8f9fb">📄</div>';
 
   const statusBadge=b.status==='pending'
-    ?`<span class="badge" style="background:#FFF7ED;color:#C05621;border:1px solid #FBD38D">待確認</span>`
-    :`<span class="badge" style="background:#F0FFF4;color:#276749;border:1px solid #9AE6B4">已匯入</span>`;
+    ?`<span class="badge" style="background:#FBF3DB;color:#956400;border:1px solid #956400">待確認</span>`
+    :`<span class="badge" style="background:#EDF3EC;color:#346538;border:1px solid #346538">已匯入</span>`;
 
   const parseResult=b.parsed?`
     <div style="flex:1">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         ${statusBadge}
         <span style="font-size:13px;font-weight:600">${esc(b.parsed.billType==='electricity'?'電費單':'水費單')} — ${esc(b.parsed.site||'未知場域')}</span>
-        <span style="font-size:12px;color:#718096">${esc(b.parsed.period||'')}</span>
+        <span style="font-size:12px;color:#787774">${esc(b.parsed.period||'')}</span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px">
         ${b.parsed.billType==='electricity'?`
@@ -1621,20 +1719,20 @@ function renderBillCard(b,editable){
           <div><div class="form-label">結束日</div><div>${esc(b.parsed.endDate||'—')}</div></div>
         `}
       </div>
-      ${b.parsed.note?`<div style="margin-top:8px;font-size:12px;color:#718096">📝 ${esc(b.parsed.note)}</div>`:''}
+      ${b.parsed.note?`<div style="margin-top:8px;font-size:12px;color:#787774">📝 ${esc(b.parsed.note)}</div>`:''}
       ${editable?`<div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-primary" onclick="commitBill('${b.id}')">✅ 確認匯入</button>
         <button class="btn btn-ghost" onclick="editBill('${b.id}')">✏️ 修改</button>
         <button class="btn btn-danger" onclick="deleteBill('${b.id}')">刪除</button>
-      </div>`:`<div style="margin-top:8px;font-size:11px;color:#718096">匯入於 ${esc(b.committedAt||'')}</div>`}
+      </div>`:`<div style="margin-top:8px;font-size:11px;color:#787774">匯入於 ${esc(b.committedAt||'')}</div>`}
     </div>`
     :`<div style="flex:1;display:flex;align-items:center">
-      <div id="parse_status_${b.id}" style="color:#718096;font-size:13px">
+      <div id="parse_status_${b.id}" style="color:#787774;font-size:13px">
         ${b.status==='parsing'?'🔄 AI 解析中...':'⚠️ 解析失敗，請重試'}
       </div>
     </div>`;
 
-  return`<div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px solid #f0f4f8">
+  return`<div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px solid #FBFBFA">
     ${imgHtml}
     ${parseResult}
   </div>`;
@@ -1650,7 +1748,7 @@ function previewImg(id){
 // ── 拖曳上傳 ──
 function handleDrop(e){
   e.preventDefault();
-  document.getElementById('dropZone').style.borderColor='#e2e8f0';
+  document.getElementById('dropZone').style.borderColor='#EAEAEA';
   handleFiles(e.dataTransfer.files);
 }
 
@@ -1841,8 +1939,8 @@ async function testApiKey(){
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]})});
     const d=await r.json();
-    if(el)el.innerHTML=r.ok?'<span style="color:#276749">✅ 連線成功！可以開始掃描帳單</span>':'<span style="color:#C53030">❌ 錯誤：'+(( d.error ? d.error.message : '' )||r.status)+'</span>';
-  }catch(e){if(el)el.innerHTML='<span style="color:#C53030">❌ 網路錯誤：'+esc(e.message)+'</span>';}
+    if(el)el.innerHTML=r.ok?'<span style="color:#346538">✅ 連線成功！可以開始掃描帳單</span>':'<span style="color:#AF4040">❌ 錯誤：'+(( d.error ? d.error.message : '' )||r.status)+'</span>';
+  }catch(e){if(el)el.innerHTML='<span style="color:#AF4040">❌ 網路錯誤：'+esc(e.message)+'</span>';}
 }
 
 // ── 編輯帳單解析結果 ──
